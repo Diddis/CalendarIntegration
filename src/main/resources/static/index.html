@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TimeEdit-Canvas Kalender Integration</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="page">
+  <header class="page-header container">
+    <h1>Överför kursschema</h1>
+  </header>
+
+  <main class="container">
+
+    <div class="url-input-group">
+        <label for="timeeditUrl">Klistra in TimeEdit-URL för kurs</label><br>
+        <input
+            type="url"
+            id="timeeditUrl"
+            name="timeeditUrl"
+            placeholder="https://cloud.timeedit.net/...">
+
+            <button type="button" class="transfer-btn">Överför</button>
+    </div>
+
+    <pre id="json-output" class="json-display"></pre>  
+
+  </main>
+
+</div>
+
+    <script src="main.js"></script>
+
+</body>
+</html>
