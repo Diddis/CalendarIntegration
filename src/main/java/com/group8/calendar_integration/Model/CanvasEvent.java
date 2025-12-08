@@ -15,17 +15,15 @@ public final class CanvasEvent {
     private final String end_at;
     private final String location_name;
     private final String description;
-    private final String context_code;
 
     public CanvasEvent(String title, String start_at, String end_at, String location_name, 
-        String description, String context_code) {
+        String description) {
 
         this.title = title;
         this.start_at = start_at;
         this.end_at = end_at;
         this.location_name = location_name;
         this.description = description;
-        this.context_code = context_code;
     }
 
     public String getTitle() {
@@ -48,14 +46,11 @@ public final class CanvasEvent {
         return description;
     }
 
-    public String getContext_code() {
-        return context_code;
-    }
 
     @Override
     public String toString() {
         return "CanvasEvent [title=" + title + ", start_at=" + start_at + ", end_at=" + end_at + ", location_name="
-                + location_name + ", description=" + description + ", context_code=" + context_code + "]";
+                + location_name + ", description=" + description + "]";
     }
 
     

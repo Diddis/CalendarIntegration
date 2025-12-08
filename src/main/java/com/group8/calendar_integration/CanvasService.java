@@ -1,5 +1,6 @@
 package com.group8.calendar_integration;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,17 +38,39 @@ public class CanvasService {
 
     //private final RestTemplate restTemplate = new RestTemplate();
 
+    // Set date-time format
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
     // Assuming your authentication token is saved in your computer's system environment
     //private final String canvasToken = System.getenv("CANVAS_API_TOKEN");
 
 
     /* Method for mapping TimeEdit Json data into format that can be posted to Canvas
-     */
+     * CanvasEvent model parameters: String title, String start_at, String end_at,  
+     * String location_name, String description, String context_code 
+    */
     public static List<CanvasEvent> mapToCanvasEvents(List<TimeEditReservation> reservations) {
         
         List<CanvasEvent> events = new ArrayList<>();
+
+        // For each TimeEdit reservation, map to Canvas event format
+        // Change slightly so that fields in "description" that have no value are not displayed 
+        for (TimeEditReservation r: reservations) {
+
+            String startAt = r.getStartdate() + "T" + r.getStarttime() + ":00";
+            String endAt = r.getEnddate() + "T" + r.getEndtime() + ":00";
+
+            // Mapping TimeEdit json columns
+            String title = r.getColumns().get(0);
+            String location = r.getColumns().get(1);
+            String description = "Teacher/Student: " + r.getColumns().get(5) +
+                            ", Group: " + r.getColumns().get(4) +
+                            ", Comment: " + r.getColumns().get(7);
+
+            events.add(new CanvasEvent(title, startAt, endAt, location, description));
+        }
         
-        return null;
+        return events;
         
     }
 
