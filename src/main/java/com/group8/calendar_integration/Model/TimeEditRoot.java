@@ -9,8 +9,9 @@ import java.util.List;
  * 
  * Using this tutorial for json-pojo conversion:
  * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
+ * https://blogs.oracle.com/javamagazine/java-json-serialization-jackson/
  */
-public class TimeEditRoot {
+public final class TimeEditRoot {
 
     private final List<String> columnheaders;
     private final List<TimeEditReservation> reservations;

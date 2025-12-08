@@ -1,5 +1,6 @@
 package com.group8.calendar_integration;
 import com.group8.calendar_integration.TimeEditService;
+import com.group8.calendar_integration.Model.TimeEditRoot;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,9 +21,9 @@ public class CalendarIntegrationController {
      * calendar data to Canvas at the click of the button
      */
     @GetMapping("/timeEditURL")    // Http endpoint for URL input by user
-    public String showTimeEditData(@RequestParam String url) {
+    public TimeEditRoot showTimeEditData(@RequestParam String url) {
         
-        return TimeEditService.fetchJson(url);
+        return TimeEditService.fetchCalendar(url);
     }
     
 

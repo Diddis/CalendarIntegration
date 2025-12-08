@@ -6,8 +6,9 @@ package com.group8.calendar_integration.Model;
  * 
  * Using this tutorial for json-pojo conversion:
  * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
+ * https://blogs.oracle.com/javamagazine/java-json-serialization-jackson/
  */
-public class CanvasEvent {
+public final class CanvasEvent {
 
     private final String title;
     private final String start_at;

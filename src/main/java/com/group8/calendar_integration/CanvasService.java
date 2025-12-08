@@ -1,7 +1,13 @@
 package com.group8.calendar_integration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 //import org.springframework.web.client.RestTemplate;
+
+import com.group8.calendar_integration.Model.CanvasEvent;
+import com.group8.calendar_integration.Model.TimeEditReservation;
 
 /**
  * Class for converting TimeEdit json data to usable Canvas
@@ -10,6 +16,7 @@ import org.springframework.stereotype.Service;
  * 
  * Using this tutorial for json-pojo conversion:
  * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
+ * https://blogs.oracle.com/javamagazine/java-json-serialization-jackson/ 
  * 
  * mapping  timeedit data to canvas data:
  * 
@@ -34,8 +41,15 @@ public class CanvasService {
     //private final String canvasToken = System.getenv("CANVAS_API_TOKEN");
 
 
-    /* Method for mapping TimeEdit Json data into format for Canvas, using json tree mapper
+    /* Method for mapping TimeEdit Json data into format that can be posted to Canvas
      */
+    public static List<CanvasEvent> mapToCanvasEvents(List<TimeEditReservation> reservations) {
+        
+        List<CanvasEvent> events = new ArrayList<>();
+        
+        return null;
+        
+    }
 
 
     /* Loop through reservations and post each reservation/event using REST

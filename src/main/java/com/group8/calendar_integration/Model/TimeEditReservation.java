@@ -8,8 +8,9 @@ import java.util.List;
  * 
  * Using this tutorial for json-pojo conversion:
  * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
+ * https://blogs.oracle.com/javamagazine/java-json-serialization-jackson/
  */
-public class TimeEditReservation {
+public final class TimeEditReservation {
 
     private final String id;
     private final String startdate;

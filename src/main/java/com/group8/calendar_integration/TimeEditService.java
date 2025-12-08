@@ -1,9 +1,9 @@
 package com.group8.calendar_integration;
+import com.group8.calendar_integration.Model.TimeEditRoot;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-//import tools.jackson.databind.JsonNode;
-//import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Class for converting TimeEdit URL to .html ending, and
@@ -26,20 +26,37 @@ public class TimeEditService {
 
     /* Fetches the Json data from TimeEdit
      * We could deserialize using POJO.
-     * But for now, printing
-     * the json String for test/early dev.
      */
-    public static String fetchJson(String url) {
+    public static TimeEditRoot fetchCalendar(String url) {
         
+        // Convert url ending to json
         String jsonUrl = convertHTMLtoJSON(url);
 
         RestTemplate restTemplate = new RestTemplate();
         String jsonString = restTemplate.getForObject(jsonUrl, String.class);
 
-        //ObjectMapper mapper = new ObjectMapper();
-        //POJO deserialization
+        // Create object mapper instance
+        ObjectMapper mapper = new ObjectMapper();
+            
+        // Convert JSON string to object (child objects - TimeEditReservation objects - are 
+        // automatically created when root is called)
+        TimeEditRoot calendar = mapper.readValue(jsonString, TimeEditRoot.class);
+        System.out.println("Calendar Object\n" + calendar);
 
-        return jsonString;
+        return calendar;
+        
+
+        // This error handling doesn't work, don't know why.
+        /*catch (JacksonIOException  e) {
+            throw new TimeEditParseException("Error while parsing TimeEdit Json data.", e);
+        }*/
+    }
+
+    // Error handling
+    public class TimeEditParseException extends RuntimeException {
+        public TimeEditParseException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 
 
