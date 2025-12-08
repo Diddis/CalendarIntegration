@@ -42,16 +42,27 @@
 }
 
 .transfer-btn {
-    background-color: var(--primary);
+    background-color: #00528c;
     color: #fff;
-    border: 1px solid var(--primary-dark);
+    border: 1px solid #004e80;
     border-radius: 4px;
-    padding: 0 16px;
+    padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
+
 .transfer-btn:hover {
-    background-color: var(--primary-dark);
+    background-color: #004271;
+}
+
+.transfer-btn.overfor {
+    background-color: #ffce32;
+    border: 1px solid #e6c329;
+    color: #1f2933;
+}
+
+.transfer-btn.overfor:hover {
+    background-color: #e6be28;       
 }
