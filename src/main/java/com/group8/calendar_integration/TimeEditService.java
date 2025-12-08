@@ -1,5 +1,6 @@
 package com.group8.calendar_integration;
 
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 //import tools.jackson.databind.JsonNode;
 //import tools.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
  * deserialize the json data to prep for sending to Canvas
  * (although currently sends back raw json string for testing)
  */
+@Service
 public class TimeEditService {
 
     public static String convertHTMLtoJSON(String timeEditURL) {
