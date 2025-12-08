@@ -8,17 +8,21 @@ import org.springframework.stereotype.Service;
  * calendar data, and POST REST service to Canvas (although we might be able to
  * have all this in one combined class. TBD)
  * 
+ * Using this tutorial for json-pojo conversion:
+ * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
  * 
- *  timeedit                          canvas
- *  ---------------------------------------------------------------
+ * mapping  timeedit data to canvas data:
+ * 
+ *  timeedit                          canvas                        notes
+ *  --------------------------------------------------------------------------
  *  startdate+starttime               calendar_event[start_at]
  *  enddate+endtime                   calendar_event[end_at]
  *  columns: aktivitet                calendar_event[title]
  *  columns: plats, lokal             calendar_event[location_name]
- *  columns: anställd, student        calendar_event[description]
- *  columns: möteslänk                calendar_event[description]
- *  columns: grupp/grupper            calendar_event[description]
- *  columns: kommentar                calendar_event[description]
+ *  columns: anställd, student        calendar_event[description]   (optional)
+ *  columns: möteslänk                calendar_event[description]   (optional)
+ *  columns: grupp/grupper            calendar_event[description]   (optional)
+ *  columns: kommentar                calendar_event[description]   (optional)
  * 
  */
 @Service

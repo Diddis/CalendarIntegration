@@ -25,8 +25,8 @@ public class TimeEditService {
 
 
     /* Fetches the Json data from TimeEdit
-     * We could deserialize into a json tree structure for "easy"
-     * selection of the data we need for Canvas. But for now, printing
+     * We could deserialize using POJO.
+     * But for now, printing
      * the json String for test/early dev.
      */
     public static String fetchJson(String url) {
@@ -37,7 +37,7 @@ public class TimeEditService {
         String jsonString = restTemplate.getForObject(jsonUrl, String.class);
 
         //ObjectMapper mapper = new ObjectMapper();
-        //return mapper.readTree(jsonString);
+        //POJO deserialization
 
         return jsonString;
     }
