@@ -1,0 +1,32 @@
+Calendar Integration Application
+--------------------------------
+
+TECH STACK
+
+The project is built as a Java SpringBoot Maven project.
+Frontend is handled with HTML, CSS, and Javascript files.
+
+
+PROJECT STRUCTURE
+
+It uses one controller and two service classes (one for TimeEdit and one for Canvas).
+1. CalendarIntegrationController handles all the actions related to button presses 
+2. TimeEditService handles changing the TimeEdit URL into .json ending and parsing into objects.
+   This class uses RestTemplate to make an HTTP GET call to TimeEdit to read the static json data. 
+3. CanvasService handles mapping those TimeEdit objects into Canvas json event objects.
+   This class will also have a REST POST call to Canvas API to post calendar events. 
+
+There are also three model classes. 
+1. CanvasEvent is used for mapping TimeEdit reservations into Canvas event objects.
+2. TimeEditReservation is used for storing individual TimeEdit reservation details.
+3. TimeEditRoot is used for storing the top-level JSON details (including a list of reservations).
+
+
+DATA
+
+No data is stored in files or databases. The calendar details are just handled as Java objects.
+
+Jackson is used to parse the json files, see the following links for json-pojo conversion (plain-old-java-objects):
+ * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
+ * https://blogs.oracle.com/javamagazine/java-json-serialization-jackson/
+
