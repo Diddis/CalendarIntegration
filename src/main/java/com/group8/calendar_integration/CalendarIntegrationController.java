@@ -1,5 +1,4 @@
 package com.group8.calendar_integration;
-import com.group8.calendar_integration.TimeEditService;
 import com.group8.calendar_integration.Model.CanvasEvent;
 import com.group8.calendar_integration.Model.TimeEditRoot;
 

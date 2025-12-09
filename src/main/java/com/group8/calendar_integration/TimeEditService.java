@@ -53,12 +53,13 @@ public class TimeEditService {
 
         return calendar;
         
-
         // This error handling doesn't work, don't know why.
         /*catch (JacksonIOException  e) {
             throw new TimeEditParseException("Error while parsing TimeEdit Json data.", e);
         }*/
     }
+
+    
 
     // Error handling
     public class TimeEditParseException extends RuntimeException {
