@@ -1,5 +1,6 @@
 package com.group8.calendar_integration.Model;
 
+import java.sql.Time;
 import java.util.List;
 
 /**
@@ -10,15 +11,20 @@ import java.util.List;
  * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
  * https://blogs.oracle.com/javamagazine/java-json-serialization-jackson/
  */
-public final class TimeEditReservation {
+public class TimeEditReservation {
 
-    private final String id;
-    private final String startdate;
-    private final String starttime;
-    private final String enddate;
-    private final String endtime;
-    private final List<String> columns;
+    private String id;
+    private String startdate;
+    private String starttime;
+    private String enddate;
+    private String endtime;
+    private List<String> columns;     // ["Aktivitet","Plats, Lokal","Kurskod","Kursnamn","Grupp/Grupper",
+                                            // "Anställd, Student","Studentförening","Kommentar, Kommentar",
+                                            // "Möteslänk","Campus","Syfte","Utrustning","Text, Text"]
 
+    public TimeEditReservation() {
+    }   
+    
     public TimeEditReservation(String id, String startdate, String starttime, 
         String enddate, String endtime, List<String> columns) {
 

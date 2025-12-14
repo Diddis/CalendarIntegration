@@ -2,6 +2,8 @@ package com.group8.calendar_integration.Model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Model class for top-level TimeEdit JSON fields.
  * Root object for TimeEdit data.
@@ -11,10 +13,14 @@ import java.util.List;
  * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
  * https://blogs.oracle.com/javamagazine/java-json-serialization-jackson/
  */
-public final class TimeEditRoot {
+@JsonIgnoreProperties(ignoreUnknown = true)   // ignore info field we do not need
+public class TimeEditRoot {
 
-    private final List<String> columnheaders;
-    private final List<TimeEditReservation> reservations;
+    private List<String> columnheaders;
+    private List<TimeEditReservation> reservations;
+
+    public TimeEditRoot() {
+    }
 
     public TimeEditRoot(List<String> columnheaders, List<TimeEditReservation> reservations) {
         this.columnheaders = columnheaders;

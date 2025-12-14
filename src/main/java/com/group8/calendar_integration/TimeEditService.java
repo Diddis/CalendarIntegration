@@ -1,14 +1,17 @@
 package com.group8.calendar_integration;
 import com.group8.calendar_integration.Model.TimeEditRoot;
 
+import java.io.IOException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 
 /**
  * Class for converting TimeEdit URL to .html ending, and
- * deserialize the json data to prep for sending to Canvas
- * (although currently sends back raw json string for testing)
+ * deserialize the json data to prep for sending to Canvas.
  */
 @Service
 public class TimeEditService {
@@ -24,8 +27,8 @@ public class TimeEditService {
     }
 
 
-    /* Fetches the Json data from TimeEdit
-     * We could deserialize using POJO.
+    /* Fetches the Json data from TimeEdit. Deserialize using POJO.
+     * Returns TimeEditRoot object containing list of TimeEditReservation objects.
      */
     public static TimeEditRoot fetchCalendar(String url) {
         
@@ -42,27 +45,30 @@ public class TimeEditService {
         // so can't automatically turn it into java object - manually doing that with mapper below.
         String jsonString = restTemplate.getForObject(jsonUrl, String.class);
 
-        // Create object mapper instance
-        ObjectMapper mapper = new ObjectMapper();
+        try {
+            // Create object mapper instance
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());     // to handle Java 8 date/time types
             
-        // Convert JSON string to object (child objects - TimeEditReservation objects - are 
-        // automatically created when root is called)
-        TimeEditRoot calendar = mapper.readValue(jsonString, TimeEditRoot.class);
+            // Convert JSON string to object (child objects - TimeEditReservation objects - are 
+            // automatically created when root is called)
+            TimeEditRoot calendar = mapper.readValue(jsonString, TimeEditRoot.class);
 
-        System.out.println("Calendar Object\n" + calendar);    // for testing
+            System.out.println("Calendar Object\n" + calendar);    // for testing
 
-        return calendar;
-        
-        // This error handling doesn't work, don't know why.
-        /*catch (JacksonIOException  e) {
-            throw new TimeEditParseException("Error while parsing TimeEdit Json data.", e);
-        }*/
+            return calendar;
+
+        } catch (IOException e) {
+            throw new TimeEditParseException(
+                "Error while parsing TimeEdit Json data.", e);
+        }
+
     }
 
     
 
     // Error handling
-    public class TimeEditParseException extends RuntimeException {
+    public static class TimeEditParseException extends RuntimeException {
         public TimeEditParseException(String message, Throwable cause) {
             super(message, cause);
         }
