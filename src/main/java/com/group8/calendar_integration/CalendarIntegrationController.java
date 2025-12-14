@@ -1,6 +1,5 @@
 package com.group8.calendar_integration;
 import com.group8.calendar_integration.Model.CalendarEvent;
-import com.group8.calendar_integration.Model.CanvasCalendarRequest;
 import com.group8.calendar_integration.Model.TimeEditRoot;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +21,7 @@ public class CalendarIntegrationController {
 
     /* Fetch TimeEdit calendar data 
      */
-    @GetMapping("/timeEditURL")    // Http endpoint for URL input by user
+    @GetMapping("/timeEditURL")    // Http endpoint for first button
     public List<CalendarEvent> getCanvasEvents(@RequestParam String url) {
 
         // Fetch TimeEdit data as POJO
@@ -35,6 +34,8 @@ public class CalendarIntegrationController {
 
     /* POST Canvas data to calendar related to inputted context_code
      */
+    //@GetMapping("/postToCanvas")    // Http endpoint for second button
+    
     
 
 

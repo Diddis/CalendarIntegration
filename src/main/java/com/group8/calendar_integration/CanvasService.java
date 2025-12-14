@@ -38,17 +38,14 @@ import com.group8.calendar_integration.Model.TimeEditReservation;
  *  columns: plats, lokal             calendar_event[location_name]
  *  columns: anställd, student        calendar_event[description]   (editable, optional)
  *  columns: möteslänk                calendar_event[description]   (editable, optional)
- *  columns: grupp/grupper            calendar_event[description]   (editable, optional)
  *  columns: kommentar                comments                      (editable, optional)
  * 
  */
 @Service
 public class CanvasService {
 
+    // Create instance of resttemplate
     private final RestTemplate restTemplate = new RestTemplate();
-
-    // Set date-time format
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     // Assuming your authentication token is saved in your computer's system environment
     private final String canvasToken = System.getenv("CANVAS_API_TOKEN");
@@ -66,30 +63,35 @@ public class CanvasService {
         // For each TimeEdit reservation, map to CalendarEvents format
         for (TimeEditReservation r: reservations) {
 
-            LocalDate startDate = LocalDate.parse(r.getStartdate());
-            LocalTime startTime = LocalTime.parse(r.getStarttime());
-            LocalDate endDate = LocalDate.parse(r.getEnddate());
-            LocalTime endTime = LocalTime.parse(r.getEndtime());
+            // Only return events with a course code, since that we don't post generic events
+            if (r.getColumns().get(2) != null && !r.getColumns().get(2).isBlank()) {
 
-            Instant startAt = ZonedDateTime.of(startDate, startTime,
-                ZoneOffset.UTC).toInstant();
-            Instant endAt = ZonedDateTime.of(endDate, endTime,
-                ZoneOffset.UTC).toInstant();
+                LocalDate startDate = LocalDate.parse(r.getStartdate());
+                LocalTime startTime = LocalTime.parse(r.getStarttime());
+                LocalDate endDate = LocalDate.parse(r.getEnddate());
+                LocalTime endTime = LocalTime.parse(r.getEndtime());
 
-            // Mapping TimeEdit json columns
-            String kurskod = r.getColumns().get(2);
-            String kurs = r.getColumns().get(3);
-            String activity = r.getColumns().get(0);
-            String location = r.getColumns().get(1);
-            String person = r.getColumns().get(5);
-            String zoomLink = r.getColumns().get(8);
-            String comment = r.getColumns().get(7); 
+                Instant startAt = ZonedDateTime.of(startDate, startTime,
+                    ZoneOffset.UTC).toInstant();
+                Instant endAt = ZonedDateTime.of(endDate, endTime,
+                    ZoneOffset.UTC).toInstant();
 
-            events.add(new CalendarEvent(kurskod, kurs, startAt, endAt, activity, 
-                location, person, zoomLink, comment));
+                // Mapping TimeEdit json columns
+                String kurskod = r.getColumns().get(2);
+                String kurs = r.getColumns().get(3);
+                String activity = r.getColumns().get(0);
+                String location = r.getColumns().get(1);
+                String person = r.getColumns().get(5);
+                String zoomLink = r.getColumns().get(8);
+                String comment = r.getColumns().get(7); 
+
+                events.add(new CalendarEvent(kurskod, kurs, startAt, endAt, activity, 
+                    location, person, zoomLink, comment));
+            }
         }
 
-        return events;   // return array list of CalendarEvents objects
+        return events;   // return array list of CalendarEvents objects   
+        
     }
 
 
@@ -104,28 +106,27 @@ public class CanvasService {
         List<CanvasCalendarRequest> requests = new ArrayList<>();
 
         // For each TimeEdit reservation, map to Canvas event format
-        // Need to hange slightly so that fields in "description" that have no value are not displayed 
         for (CalendarEvent e: events) {
 
             StringBuilder description = new StringBuilder();
             // Include person if present
-            if (e.getPerson() != null && !e.getPerson().isEmpty()) {
+            if (e.getPerson() != null && !e.getPerson().isBlank()) {
                 description.append(e.getPerson());
             }
             // Include zoomlink if present
-            if (e.getZoomLink() != null && !e.getZoomLink().isEmpty()) {
+            if (e.getZoomLink() != null && !e.getZoomLink().isBlank()) {
                 if (description.length() > 0) description.append("\n"); {
                     description.append("Zoom-länk: ").append(e.getZoomLink());
             }
 
             String comments = "";
-            if (e.getcomments() != null && !e.getcomments().isEmpty()) {
+            if (e.getcomments() != null && !e.getcomments().isBlank()) {
                 comments = e.getcomments();
             }
 
             CanvasCalendarRequest request = new CanvasCalendarRequest(
                 contextCode, 
-                e.getActivity(),       // title
+                e.getActivity() + " (TE)",       // add TE title to indicate TimeEdit origin
                 e.getStartAt().toString(),
                 e.getEndAt().toString(),
                 e.getLocationName(),
@@ -135,6 +136,7 @@ public class CanvasService {
             requests.add(request);
 
             }
+            
         }
 
         return requests;   // return array list of CanvasCalendarRequest objects
