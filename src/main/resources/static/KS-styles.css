@@ -1,0 +1,248 @@
+:root {
+  --primary: #1287d6;
+  --primary-dark: #0e70af;
+  --border: #cdd7e0;
+  --border-strong: #b1c3d8;
+  --text: #1f2933;
+  --muted: #6b7280;
+  --alt-row: #f8fafc;
+  --banner: #daedf4;
+  --control: #00528c;
+}
+
+
+.page-header h1, p {
+  margin: 0 auto 10px 0.5rem;
+  padding: 0 0;    
+}
+
+.page-header h1 {
+  font-size: 22px;
+  font-weight: 600;  
+  border-bottom: 2px solid var(--primary-dark);  
+}
+
+
+.container {
+  max-width: 1220px;
+  margin: 10px auto 20px;
+  padding: 0 14px;
+}
+
+.url-input-group input[type="url"] {
+    width: 100%;           
+    max-width: 600px;     
+    height: 40px;          
+    padding: 10px;       
+    font-size: 16px; 
+    box-sizing: border-box; 
+
+    font-family: inherit;   
+    font-weight: 400;    
+    color: var(--text);   
+    border: 1px solid var(--border);
+    border-radius: 4px; 
+}
+
+.url-input-wrapper {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.transfer-btn {
+    background-color: #00528c;
+    color: #fff;
+    border: 1px solid #004e80;
+    border-radius: 4px;
+    padding: 10px 20px;
+    margin-left: 0px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+input[value="Hämta kalenderdata"] {
+    margin-left: 30px;   
+    border-bottom: 2px solid var(--primary-dark);  
+}
+
+
+.transfer-btn:hover {
+    background-color: #004271;
+}
+
+.transfer-btn.overfor {
+    background-color: #ffce32;
+    border: 1px solid #e6c329;
+    color: #1f2933;
+}
+
+.transfer-btn.overfor:hover {
+    background-color: #e6be28;       
+}
+
+/* Kims tillägg börjar här: */
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 12px 10px 0px 10px;
+  padding-top: 1px; /* Stops margin collapse */
+
+  /*  Tidigare:   display: grid;  */
+  /*  Tidigare:   grid-template-columns:auto auto;   */
+ 
+  /*  gap: 10px 30px;   ....Tidigare:  gap: 24px;  */
+  
+}
+
+
+
+/* KS: Manuellt bestämd för att rymma rutan för URL-input
+#search-cal {
+  width: 45rem; 
+}
+ */
+
+
+.filter-field label {
+  display: block;
+  margin-top: 0px;
+  margin-bottom: 0px;  /* KS: Provat ändra från 6px till 0px  */ 
+  font-weight: 700;
+  color: #2f3942;
+}
+
+
+/* Styles for the div containing the course code */
+.filter-row .course-field:first-child {
+  /* Default flex behavior sizes it to content, but we can explicitly set it: */
+  width: max-content; /* Or width: fit-content; */
+  flex-grow: 0;      /* Prevents it from expanding beyond its content width */
+  flex-shrink: 0;    /* Prevents it from shrinking if space is tight */
+}
+
+/* Var tidigare deaktiverad och innan det: max-width: 100%;  
+.course-field {    
+  flex-basis: 100%;  
+}
+*/
+ 
+
+.course-field p {
+  padding: 4px;
+  margin: 0px;
+}
+
+/* Styles for the div containing the course name */
+.filter-row .course-field:nth-child(2) {
+  flex-grow: 1; /* This makes it expand to fill all remaining space */
+  flex-shrink: 1; /* Allows it to shrink if necessary */
+  /*  width: 100% is redundant here because flex-grow handles the expansion */
+}
+
+.course-field.table-wrap {
+  width: 100%;       /* Ensures it uses 100% of the parent .filter-row */
+  flex-basis: 100%;  /* Ensures it occupies its own full line in the flex layout */
+  margin: 0;         /* Removes any margins shrinking it */
+  padding: 0;        /* Removes any padding shrinking it */
+  box-sizing: border-box; 
+}
+
+.filter-row .data-table {
+  /*
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto; 
+  */
+  width: 100%;
+  border-collapse: collapse;
+  /* Below is the key property for forcing equal distribution if you don't define widths of all columns */
+  table-layout: fixed; 
+  margin-top: 10px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 6px;
+  text-align: left;
+}
+
+/* Define widths for all columns */
+.data-table .col-check {
+  width: 5%; /* Checkbox is small */
+}
+
+.data-table .date {
+  width: 10%; /* Date is small */
+}
+
+
+/* These share the remaining ~85% of the space. */
+/* We don't need to assign a fixed width to the rest if we want the browser to figure it out 
+.data-table .sortable {
+}
+*/
+
+
+#course-code, 
+#course-name, 
+.filter-row .course-field th {
+  width: 100%; /* Behövs för att fylla ut elementet ända ut till containerns marginal */
+  background: var(--banner);
+  padding: 4px 6px;
+  margin: 0px;
+  font-size: 14px;
+  color: var(--text);
+  border: 1px solid var(--primary-dark);  
+}
+
+#course-code {
+  border-right: none;   
+}
+
+
+#course-name {
+  border-left: none;  
+ /* Remove flex-basis here, it belongs on the parent div.course-field */
+  /* flex-basis: 100%; */ 
+}
+
+
+/* Ensure no fixed height is forcing size 
+.filter-field input {
+  height: auto;     
+}
+*/
+
+
+.filter-row .filter-field {  
+  margin-top: 0px;  
+}
+
+
+
+:placeholder-shown {   /* Innan: :placeholder-shown   */
+  width: 45rem;  /* KS: Bredden för rutan med URL-input, tidigare 100%  */
+}
+
+/*
+input#timeEditURL {
+  margin-right: 80px;
+  padding-right: 50px
+}
+*/
+
+#split-line {
+  border-bottom: 2px solid var(--primary-dark);  
+  margin: 10px auto 6px 0.5rem;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  font: 14px/1.45 "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background: #ffffff;
+}
