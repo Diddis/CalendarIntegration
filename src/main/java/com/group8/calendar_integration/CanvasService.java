@@ -1,20 +1,19 @@
 package com.group8.calendar_integration;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-//import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 
 import com.group8.calendar_integration.Model.CalendarEvent;
 import com.group8.calendar_integration.Model.CanvasCalendarRequest;
@@ -47,16 +46,26 @@ public class CanvasService {
     // Create instance of resttemplate
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // Assuming your authentication token is saved in your computer's system environment
-    private final String canvasToken = System.getenv("CANVAS_API_TOKEN");
+    private final String canvasToken;
 
+    // Constructor for CanvasService class
+    public CanvasService() {
+
+        // Assuming your authentication token is saved in your computer's system environment
+        this.canvasToken = System.getenv("CANVAS_API_TOKEN");
+
+        // Check if the token is not set
+        if (this.canvasToken == null || this.canvasToken.isEmpty()) {
+            throw new IllegalStateException("Canvas API token is not set in environment variables.");
+        }
+    }
 
 
     /* Method for mapping TimeEdit objects to calender event objects for API use, 
      * including for showing info in frontend.
      * Returns list of CalendarEvents objects.
     */
-   public static List<CalendarEvent> mapToCalendarEvents(List<TimeEditReservation> reservations) {
+   public List<CalendarEvent> mapToCalendarEvents(List<TimeEditReservation> reservations) {
         
         List<CalendarEvent> events = new ArrayList<>();
 
@@ -100,7 +109,7 @@ public class CanvasService {
      * 
      * Returns list of CanvasCalendarRequest objects
     */
-    public static List<CanvasCalendarRequest> mapToCanvasCalendar(List<CalendarEvent> events, 
+    public List<CanvasCalendarRequest> mapToCanvasCalendar(List<CalendarEvent> events, 
         String contextCode) {
         
         List<CanvasCalendarRequest> requests = new ArrayList<>();
@@ -111,11 +120,11 @@ public class CanvasService {
             StringBuilder description = new StringBuilder();
             // Include person if present
             if (e.getPerson() != null && !e.getPerson().isBlank()) {
-                description.append(e.getPerson());
+                description.append(e.getPerson()).append("<br>");
             }
             // Include zoomlink if present
             if (e.getZoomLink() != null && !e.getZoomLink().isBlank()) {
-                if (description.length() > 0) description.append("\n"); {
+                if (description.length() > 0) description.append("<br>"); {
                     description.append("Zoom-länk: ").append(e.getZoomLink());
             }
 
@@ -134,9 +143,7 @@ public class CanvasService {
                 comments);
 
             requests.add(request);
-
-            }
-            
+            } 
         }
 
         return requests;   // return array list of CanvasCalendarRequest objects
@@ -147,17 +154,26 @@ public class CanvasService {
      * Loop through reservations and post each reservation/event using REST
      */
 
-    public String RESTPostCanvasEvents(List<CanvasCalendarRequest> canvasEvents, String contextCode) {
+    public String RESTPostCanvasEvents(List<CanvasCalendarRequest> canvasEvents) {
         try {
+
+            // Construct the URL for posting calendar events
+            String canvasURL = "https://canvas.ltu.se/api/v1/calendar_events";
+
+            // Build headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(canvasToken);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
             for (CanvasCalendarRequest e : canvasEvents) {
                 // Post each event to Canvas
                 // The URL structure is based on Canvas API documentation at https://canvas.instructure.com/doc/api/calendar_events.html#method.calendar_events.create
-                
-                // Construct the URL for posting calendar events
-                String canvasURL = "https://canvas.instructure.com/api/v1/courses/" + contextCode + "/calendar_events?access_token=" + canvasToken;
+
+                // Wrap body and headers into httpentity
+                HttpEntity<CanvasCalendarRequest> requestEntity = new HttpEntity<>(e, headers);
 
                 // Post the event
-                restTemplate.postForObject(canvasURL, e, String.class);
+                restTemplate.postForObject(canvasURL, requestEntity, String.class);
             }
             return "All events posted successfully to Canvas.";
         } 
