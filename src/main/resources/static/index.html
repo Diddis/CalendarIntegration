@@ -1,31 +1,131 @@
+
 <!DOCTYPE html>
 <html lang="sv">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TimeEdit-Canvas Kalender Integration</title>
+<title>TE-Canvas Kalenderöverföring</title>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
 <div class="page">
+
   <header class="page-header container">
-    <h1>Överför kursschema</h1>
+    <h1>Överför kurskalender från TimeEdit till Canvas</h1>
   </header>
 
   <main class="container">
 
-    <div class="url-input-group">
-        <label for="timeeditUrl">Klistra in TimeEdit-URL för kurs</label><br>
+    <!-- KS-tillägg börjar här.... -->
+    <section class="filter-row" aria-label="Kalenderhämtning"> 
+      <div class="filter-field" id="search-cal">        
+        <label for="kurskod">Klistra in TimeEdit-URL för kursen:</label> 
         <input
             type="url"
             id="timeeditUrl"
             name="timeeditUrl"
-            placeholder="https://cloud.timeedit.net/...">
+            placeholder="Typ: https://cloud.timeedit.net/ltu/web/schedule1/ri10Q956X55Z07Q6Z76g5Y00y7006Y34706gQY7Q5476.html">            
+      </div>
 
-            <button type="button" class="transfer-btn">Hämta kalender</button>
-            <button type="button" class="transfer-btn overfor">Överför</button>
+      <div class="filter-field">          
+        <label for="kalenderdata"></label> 
+        <input type="button" id="fetch-cal-btn" class="transfer-btn" value="Hämta kalenderdata">        
+      </div>
+    </section>
+
+    <section class="filter-row" aria-label="Kursinfo">         
+      <div class="course-field">            
+        <p id="course-code"> 
+          <strong>Kurskod:</strong>        
+        </p>
+        <p>
+          D0031N D0031N
+        </p>
+      </div>
+
+      <div class="course-field">            
+        <p id="course-name"> 
+          <strong>Kursnamn:</strong>        
+        </p>
+        <p>
+          Enterprise Architecture och SOA Enterprise Architecture och SOA      
+        </p>
+      </div> 
+    </section>
+
+    <section class="filter-row" aria-label="Kalenderöverföring">  
+      
+      <div class="filter-field" id="cal-type" aria-label="Kalendertyp">    
+        <label for="kalenderval">Välj kalender i Canvas:</label> 
+        <select id="kalendertyp" aria-label="Välj kalendertyp">
+          <option>-</option>
+          <option value="personlig">Personlig kalender</option>
+          <option value="grupp">Gruppkalender</option>
+          <option value="kurs">Kurskalender</option>          
+        </select>       
+      </div> 
+      
+      <div class="filter-field" id="transfer-cal" aria-label="Överföring">       
+        <label for="skicka-data"></label>  
+        <input type="button" id="transfer-cal-btn" class="transfer-btn" value="Överför kalender till Canvas">        
+      </div>
+    </section>
+    
+    <div id="split-line">            
     </div>
+    
+    <section class="table-card" aria-label="Kalenderdata"> 
+      <div class="table-wrap">   
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-check"></th>
+              <th class="date sortable" data-sort-key="date" scope="col" aria-sort="ascending">
+                Datum <span class="sort sort-asc" aria-hidden="true"></span>
+              </th>
+              <th class="sortable" data-sort-key="time" scope="col">
+                Tid <span class="sort" aria-hidden="true"></span>
+              </th>
+              <th class="sortable" data-sort-key="activity-place" scope="col">
+                Aktivitet & Plats <span class="sort" aria-hidden="true"></span>
+              </th>
+              <th class="sortable" data-sort-key="person" scope="col">
+                Anställd, Student <span class="sort" aria-hidden="true"></span>
+              </th>
+              <th class="sortable" data-sort-key="zoom" scope="col">
+                Zoom-länk <span class="sort" aria-hidden="true"></span>
+              </th>
+              <th class="sortable" data-sort-key="comments" scope="col">
+                Kommentarer <span class="sort" aria-hidden="true"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>  <!-- KS: Table-data har hårdkodats hit bara för att testa layouten -->
+              <td class="col-check"><input type="checkbox" /></td>
+              <td class="date">2024-09-03</td>
+              <td class="time">10:15 - 11:45</td>
+              <td class="activity-place">Föreläsning, Sal A741</td>
+              <td class="person">Madhu Kumari</td>
+              <td class="zoom"><a href="https://ltu-se.zoom.us/1234567890">https://ltu-se.zoom.us</a></td>
+              <td class="comments">Kursintroduktion. Spelas in.</td>
+            </tr>
+            <tr>
+              <td class="col-check"><input type="checkbox" /></td>
+              <td class="date">2024-09-10</td>
+              <td class="time">13:00 - 14:30</td>
+              <td class="activity-place">Föreläsning, Sal B109</td>
+              <td class="person">Ingemar Andersson</td>
+              <td class="zoom"><a href="https://ltu-se.zoom.us/1234567890">https://ltu-se.zoom.us</a></td>
+              <td class="comments">Intro till Uppgift 1</td>
+            </tr> <!-- KS: Slut på tillförd table-data här (I Uppgift 3 var slutliga tabell-data endast: <tbody></tbody> ) -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ....KS-tillägg slutar här -->
 
     <pre id="json-output" class="json-display"></pre>  
 

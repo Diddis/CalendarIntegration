@@ -1,6 +1,6 @@
 // DOM elements
-const button1 = document.querySelector(".transfer-btn");
-const button2 = document.querySelector(".transfer-btn.overfor");
+const button1 = document.querySelector(".fetch-cal-btn");
+const button2 = document.querySelector(".transfer-cal-btn");
 const input = document.getElementById("timeeditUrl");
 const output = document.getElementById("json-output");   // for testing/dev. purposes
 
