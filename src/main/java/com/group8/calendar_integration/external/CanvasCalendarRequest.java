@@ -1,4 +1,4 @@
-package com.group8.calendar_integration.Model;
+package com.group8.calendar_integration.external;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

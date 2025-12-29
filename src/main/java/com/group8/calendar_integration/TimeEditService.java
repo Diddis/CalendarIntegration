@@ -1,12 +1,11 @@
 package com.group8.calendar_integration;
-import com.group8.calendar_integration.Model.TimeEditRoot;
-
 import java.io.IOException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.group8.calendar_integration.external.TimeEditRoot;
 
 
 /**

@@ -3,7 +3,7 @@ package com.group8.calendar_integration.model;
 import java.time.Instant;
 
 /**
- * Model class for data needed in app and frontend. Then also used to populate 
+ * Model class for data needed internally. Also used to populate 
  * CanvasCreateCalendarRequest objects for POST requests to Canvas.
  */
 public class CalendarEvent {

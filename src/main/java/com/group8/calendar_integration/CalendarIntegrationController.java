@@ -1,10 +1,10 @@
 package com.group8.calendar_integration;
-import com.group8.calendar_integration.Model.CalendarEvent;
-import com.group8.calendar_integration.Model.CanvasCalendarRequest;
-import com.group8.calendar_integration.Model.TimeEditRoot;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.group8.calendar_integration.external.CanvasCalendarRequest;
+import com.group8.calendar_integration.external.TimeEditRoot;
+import com.group8.calendar_integration.model.CalendarEvent;
 
 import java.util.List;
 
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller class.
- * For testing, here is the webaddress for this class in timeedit: https://cloud.timeedit.net/ltu/web/schedule1/ri177XQQ750Z50Qv3Q073gZ6y6Y650476Y75Y.html
  */
 @RestController
 @RequestMapping("/kalender")       // Http beginning for all endpoints in this controller
@@ -43,17 +42,20 @@ public class CalendarIntegrationController {
 
     }
 
-    /* POST Canvas data to calendar related to inputted context_code
+    /* POST Canvas data to calendar 
+     * Which calendar it is posted to is determined by inputted context_code, add 
+     * @RequestParam when frontend is ready
      */
     @PostMapping("/postToCanvas")    // Http endpoint for second button
     public String postToCanvas(@RequestBody List<CalendarEvent> events) {
 
+        // Hardcoded context code for testing
+        String contextCode = "user_45559";    
+
+        System.out.println("Printing mapped events:");   // testing
+        System.out.println(events);                        // testing
+
         // Convert CalendarEvents to CanvasCalendarRequest format
-        String contextCode = "user_45559";    // for testing, need to add a @RequestParam later in the method
-
-        System.out.println("Printing mapped events:");
-        System.out.println(events);
-
         List<CanvasCalendarRequest> canvasRequests = canvasService.mapToCanvasCalendar(
             events, contextCode);
 

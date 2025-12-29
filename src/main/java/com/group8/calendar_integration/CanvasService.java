@@ -1,4 +1,7 @@
 package com.group8.calendar_integration;
+import com.group8.calendar_integration.external.CanvasCalendarRequest;
+import com.group8.calendar_integration.external.TimeEditReservation;
+import com.group8.calendar_integration.model.CalendarEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +17,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-
-import com.group8.calendar_integration.Model.CalendarEvent;
-import com.group8.calendar_integration.Model.CanvasCalendarRequest;
-import com.group8.calendar_integration.Model.TimeEditReservation;
 
 /**
  * Class for converting TimeEdit json data to usable Canvas
@@ -46,6 +45,7 @@ public class CanvasService {
     // Create instance of resttemplate
     private final RestTemplate restTemplate = new RestTemplate();
 
+    // Canvas API authentication token instance variable
     private final String canvasToken;
 
     // Constructor for CanvasService class
@@ -61,18 +61,19 @@ public class CanvasService {
     }
 
 
-    /* Method for mapping TimeEdit objects to calender event objects for API use, 
+    /* Method for mapping TimeEdit objects to calender event objects for internal API use, 
      * including for showing info in frontend.
+     *
      * Returns list of CalendarEvents objects.
     */
    public List<CalendarEvent> mapToCalendarEvents(List<TimeEditReservation> reservations) {
         
-        List<CalendarEvent> events = new ArrayList<>();
+        List<CalendarEvent> events = new ArrayList<>(); 
 
         // For each TimeEdit reservation, map to CalendarEvents format
         for (TimeEditReservation r: reservations) {
 
-            // Only return events with a course code, since that we don't post generic events
+            // Only return events with a course code, so that we don't post generic events (like holidays)
             if (r.getColumns().get(2) != null && !r.getColumns().get(2).isBlank()) {
 
                 LocalDate startDate = LocalDate.parse(r.getStartdate());
@@ -104,7 +105,7 @@ public class CanvasService {
     }
 
 
-    /* Method for mapping CalendarEvent objects to CanvasCalendarRequest objects for 
+    /* Method for mapping nested CalendarEvent objects to CanvasCalendarRequest objects for 
      * POSTING to Canvas API.
      * 
      * Returns list of CanvasCalendarRequest objects
@@ -117,7 +118,7 @@ public class CanvasService {
         // For each TimeEdit reservation, map to Canvas event format
         for (CalendarEvent e: events) {
 
-            StringBuilder description = new StringBuilder();
+            StringBuilder description = new StringBuilder();         // string together several fields for Canvas description
             // Include person if present
             if (e.getPerson() != null && !e.getPerson().isBlank()) {
                 description.append(e.getPerson()).append("<br>");
@@ -152,6 +153,8 @@ public class CanvasService {
 
     /* REST call to Canvas API to post calendar events
      * Loop through reservations and post each reservation/event using REST
+     * 
+     * Returns success message or throws exception on error
      */
 
     public String RESTPostCanvasEvents(List<CanvasCalendarRequest> canvasEvents) {

@@ -1,11 +1,10 @@
-package com.group8.calendar_integration.Model;
+package com.group8.calendar_integration.external;
 
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * Model class for top-level TimeEdit JSON fields.
+ * Class for top-level TimeEdit JSON fields.
  * Root object for TimeEdit data.
  * Immutable to avoid editing calendar data during transfer.
  * 
