@@ -1,4 +1,5 @@
 package com.group8.calendar_integration;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

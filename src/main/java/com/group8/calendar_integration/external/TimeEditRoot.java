@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.group8.calendar_integration.external;
 
 import java.util.List;

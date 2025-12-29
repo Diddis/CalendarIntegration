@@ -32,6 +32,7 @@
   padding: 0 14px;
 }
 
+/* KS: Klasserna ".url-input-" behövs/används inte längre .....?  
 .url-input-group input[type="url"] {
     width: 100%;           
     max-width: 600px;     
@@ -53,6 +54,8 @@
     margin-top: 5px;
 }
 
+*/
+
 .transfer-btn {     
     background-color: #00528c;
     color: #fff;
@@ -60,20 +63,21 @@
     border-radius: 4px;
     padding: 10px 20px;
     margin: 10px 0px 0px 0px;
-    margin-left: 0px;
-    margin-bottom: 0px;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
-/* KS tillägg för att få högermarginal till knapparna */
-#search-cal,
+/* KS tillägg för att få responsiv högermarginal till knappen */
 #cal-type {
     margin-right: 30px;        
 }
 
+/* KS tillägg för att få responsiv högermarginal till knappen */
+#search-cal {
+    padding-right: 30px;        
+}
 
 .transfer-btn:hover {
     background-color: var(--primary-dark);
@@ -90,8 +94,6 @@
     background-color: #e6be28;       
 }
 
-
-/* Kims tillägg börjar här: */
 
 .filter-row {
   display: flex;
@@ -110,6 +112,11 @@
 }
 
 /* Styles for the div containing the course code */
+.filter-row .course-field p {
+  padding: 4px;
+  margin: 0px;
+}
+
 .filter-row .course-field:first-child {
   /* Default flex behavior sizes it to content, but we can explicitly set it: */
   width: max-content; /* Or width: fit-content; */
@@ -117,11 +124,6 @@
   flex-shrink: 0;    /* Prevents it from shrinking if space is tight */
 }
  
-
-.course-field p {
-  padding: 4px;
-  margin: 0px;
-}
 
 /* Styles for the div containing the course name */
 .filter-row .course-field:nth-child(2) {
@@ -159,17 +161,20 @@
 
 /* Definiera bredden på valda kolumner */
 .data-table .col-check {
-  width: 5%; /* Checkbox kan bra hållas smal */
+  width: fit-content;
+  /* width: 5%; Tidigare Checkbox kan bra hållas smal */
 }
 
-
 #course-code, 
-#course-name {
+#course-name,
+#course-code-value, 
+#course-name-value {
   width: 100%; /* Behövs för att fylla ut elementet ända ut till containerns marginal */
   background: var(--banner);
   padding: 4px 6px;
   margin: 0px;
   font-size: 14px;
+  font-weight: bold;
   color: var(--text);
   border: 1px solid var(--primary-dark);  
 }
@@ -178,20 +183,31 @@
   border-right: none;   
 }
 
-
 #course-name {
   border-left: none;  
 }
 
+#course-code-value, 
+#course-name-value {
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: normal; 
+}
+
+#course-code-value{
+  border-top: none;
+  border-right: none;
+}
+
+#course-name-value{
+  border-top: none;
+  border-left: none;
+}
 
 .filter-row .filter-field {  
   margin-top: 0px;  
 }
 
-
-.filter-row .filter-field :placeholder-shown {   /* Innan: :placeholder-shown   */  
-  width: 45rem;  /*  KS: Bredden för rutan med URL-input, tidigare 100%  */  
-}
 
 /* KS: "Overflow: hidden" tillaggt för att placeholdern inte ska spilla ut ur skärmen.
 Kontrollera ändå att layouten & responsitiveten för övriga elementen fungerar som avsett. */
@@ -199,13 +215,31 @@ Kontrollera ändå att layouten & responsitiveten för övriga elementen fungera
   overflow: hidden; 
 }
 
+/* KS: Testar här 20.12.2025.......
+.filter-row .filter-field :placeholder-shown {  
+  width: 45rem;   
+}
 
 .filter-row .filter-field input:placeholder-shown {    
   font-style: italic;
 }
+........ testar 20.12.2025 slutar här. */
 
-.filter-row .filter-field input#timeeditUrl {
-  background-color: var(--form);    
+
+.filter-row .filter-field #timeeditUrl {
+  width: 45rem;    
+}
+
+#timeeditUrl:focus {
+  outline: none;       /* Tar bort den blåa kanten vid fokus  */   
+}
+
+#timeeditUrl:placeholder-shown {    
+  background-color: var(--form);  
+  color: #404040;          /* Ändrar textfärgen */
+  font-style: italic;   /* Gör texten kursiv */
+  opacity: 1;           /* Firefox kräver ofta opacity: 1 för att färgen ska synas rätt */
+  font-size: 0.8rem;    /* Gör texten något mindre än vanlig text */
 }
 
 
