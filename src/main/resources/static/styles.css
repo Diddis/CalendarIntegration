@@ -314,3 +314,8 @@ select#kalendertyp {
 .filter-row .filter-field label[for="kalenderdata"] {
   margin-bottom: 0px;   
 }
+
+#fetch-cal-btn.transfer-btn {
+  margin-right: 20px;   
+}
+
