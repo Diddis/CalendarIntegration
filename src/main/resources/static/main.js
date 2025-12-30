@@ -1,6 +1,7 @@
 // DOM elements
 const button1 = document.getElementById("fetch-cal-btn");   // I Uppgift-3 var denna id "transfer-btn". 
 const button2 = document.getElementById("transfer-cal-btn");
+const clearButton = document.getElementById("empty-cal-btn");
 const input = document.getElementById("timeeditUrl");
 const output = document.getElementById("json-output");   // for testing/dev. purposes
 
@@ -13,7 +14,21 @@ let calTable = [];  // I Uppgift-3 var denna variabel "courseTabell".
 let errorTimer = null;
 
 
-async function fetchJSON(path) {
+// Event listener for the button
+clearButton.addEventListener("click", () => {
+  document.getElementById("timeeditUrl").value = "";
+  document.getElementById("course-code-value").innerText = ``; 
+  document.getElementById("course-name-value").innerText = ``; 
+
+  output.textContent = "";    // Clear the output area from previous JSON data displayed (for testing purposes)
+  tableBody.innerHTML = "";   // Clear the table body
+  events = []; 
+  console.log("Alla fält är nu tömda."); 
+});
+
+
+
+async function fetchJSON(path) {  
   console.log("Hämtar kalenderhändelser från: ", path);  
   const res = await fetch(`${API_BASE}${path}`);
   if (!res.ok) {
@@ -52,6 +67,15 @@ button1.addEventListener("click", async () => {
         // KS: Render the table with the fetched events 
         renderTable(); 
 
+        // KS: Get course code and name (variables 'courseCode' & 'courseName') from the first event fetched   
+        const info = getCourseCodeName();
+        console.log("Visar kursdata för:", info.courseCode + ": " + info.courseName);
+        // Om du har ett element med id "course-header":
+        document.getElementById("course-code-value").innerText = `${info.courseCode}`; 
+        document.getElementById("course-name-value").innerText = `${info.courseName}`;        
+        // TESTING: document.getElementById("course-header").innerText = `${info.courseCode} & ${info.courseName}`;      
+        
+
     } catch (err) {
         console.error(err);
         alert("Kunde inte hämta data.");
@@ -81,6 +105,8 @@ button2.addEventListener("click", async () => {
             },
             body: canvasData // Send events as JSON in the body
         });
+
+        clearButton.click();  // KS addition: Clear all fields after posting data to Canvas
 
         // Log the response status and body
         console.log("Response status:", postResponse.status);
@@ -165,3 +191,29 @@ function renderTable() {
 }
 /* ......... KS arbete slutar här */
 
+<<<<<<< HEAD
+=======
+function getCourseCodeName() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const courseCode = urlParams.get("courseCode");
+  const courseName = urlParams.get("courseName");
+  return { courseCode, courseName };
+}
+
+
+function getCourseCodeName() {
+    // Check for fetched events
+    if (events && events.length > 0) {
+        // Extract data from the first event in the list
+        const firstEvent = events[0];
+
+        return {
+            // Use field names from backend (CalendarEvent.java)
+            courseCode: firstEvent.kurskod || "Kursod saknas",
+            courseName: firstEvent.kurs || "Kursnamn saknas"
+        };
+    }
+    return { courseCode: null, courseName: null };
+}
+
+>>>>>>> ddb54ef (Added dynamics for: Course code+name fields & Clear-fields button)
