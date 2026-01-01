@@ -179,6 +179,9 @@ public class CanvasService {
                 // Post each event to Canvas
                 // The URL structure is based on Canvas API documentation at https://canvas.instructure.com/doc/api/calendar_events.html#method.calendar_events.create
 
+                // KS tillägg 2026-01-01 för felsökning
+                System.out.println("Skickar event med context_code: " + e.getContextCode());  
+                
                 // Wrap body and headers into httpentity
                 HttpEntity<CanvasCalendarRequest> requestEntity = new HttpEntity<>(e, headers);
 
