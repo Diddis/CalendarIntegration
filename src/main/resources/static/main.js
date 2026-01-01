@@ -6,6 +6,7 @@ const input = document.getElementById("timeeditUrl");
 const output = document.getElementById("json-output");   // for testing/dev. purposes
 
 const API_BASE = "";    // Kunde ändras från "" till "/kalender", men behövs det eller blir det då bara krångligare?
+const idInput = document.getElementById("cal-id"); // KS tillägg 2026-01-01 
 const tableBody = document.querySelector(".data-table tbody");
 // const selectedCountEl = document.querySelector(".selected-count strong");  KS: Element & klass för räknaren behövs till HTML
 // const errorEl = document.querySelector(".error-message");     KS: Element & klass för felmeddelande behövs till HTML
@@ -18,7 +19,8 @@ let errorTimer = null;
 clearButton.addEventListener("click", () => {
   document.getElementById("timeeditUrl").value = "";
   document.getElementById("course-code-value").innerText = ``; 
-  document.getElementById("course-name-value").innerText = ``; 
+  document.getElementById("course-name-value").innerText = ``;
+  document.getElementById("cal-id").value = "";  // KS tillägg 2026-01-01
 
   output.textContent = "";    // Clear the output area from previous JSON data displayed (for testing purposes)
   tableBody.innerHTML = "";   // Clear the table body
@@ -93,12 +95,23 @@ button2.addEventListener("click", async () => {
         return;
     }
 
+    // KS tillägg 2026-01-01 börjar här ...         
+    const currentId = idInput.value;  // Hämta det aktuella värdet vid knapptryckning ("Överför kalender")
+
+    if (!currentId) {
+        alert("Fyll i ett ID i fältet.");
+        return;
+    }
+    // .... KS tillägg 2026-01-01 slutar här 
+
     try {
         console.log("Posting events to Canvas");
         const canvasData = JSON.stringify(events);
 
         // Send the events to the backend Canvas endpoint via POST
-        const postResponse = await fetch('/kalender/postToCanvas', {
+        //  const postResponse = await fetch('/kalender/postToCanvas', {   // KS ändring 2026-01-01
+        // KS ändring 2026-01-01 i raden nedan (const postResponse = ...)  
+        const postResponse = await fetch(`/kalender/postToCanvas?idInputCode=${encodeURIComponent(currentId)}`, {  
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -106,9 +119,27 @@ button2.addEventListener("click", async () => {
             body: canvasData // Send events as JSON in the body
         });
 
-        clearButton.click();  // KS addition: Clear all fields after posting data to Canvas
+        // KS tillägg 2026-01-01 börjar här ... 
+        // Kontrollera om statuskoden är OK, d.v.s. mellan 200-299
+        if (postResponse.ok) {
+            output.textContent = `Status-kod: ` + postResponse.status; // Visa statuskoden i output-området
+            const successText = await postResponse.text();
+            output.textContent = `Success: ${successText}`;
+            output.textContent = `Response body: ` + successText; // Visa hela svaret 
+            alert("Överföringen lyckades!"); // Alert vid framgång
 
-        // Log the response status and body
+            clearButton.click();  // KS addition: Clear all fields after posting data to Canvas 
+        } else {
+            // Om statuskoden är t.ex. 400 eller 500
+            const errorText = await postResponse.text();
+            output.textContent = `Failure: ${errorText}`;
+            output.textContent = `Response body: ` + errorText; // Visa hela svaret 
+            alert("Fel: " + errorText); // Alert-ruta med felmeddelandet från Java
+        }        
+        // .... KS tillägg 2026-01-01 slutar här 
+        
+        /* KS deactivated previous code on 2026-01-01 starting from here ... 
+        // Log the response status and body        
         console.log("Response status:", postResponse.status);
         const responseText = await postResponse.text();  // Get raw response text
         console.log("Response body:", responseText);
@@ -121,6 +152,7 @@ button2.addEventListener("click", async () => {
             // Handle failure
             output.textContent = `Failure: ${responseText}`;
         }
+        ... KS deactivated previous code on 2026-01-01 ending here  */
 
     } catch (err) {
         console.error(err);
