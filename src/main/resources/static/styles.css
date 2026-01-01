@@ -71,12 +71,13 @@
 
 /* KS tillägg för att få responsiv högermarginal till knappen */
 #cal-type {
-    margin-right: 30px;        
+  display: none;  /* KS: OBS! DÖLJER HELA DIV "CAL-TYPE" P.G.A, ÄNDRINGAR GRJODA 2026-01-01 I GUI */  
+  margin-right: 20px;        
 }
 
 /* KS tillägg för att få responsiv högermarginal till knappen */
 #search-cal {
-    padding-right: 30px;        
+    padding-right: 20px;        
 }
 
 .transfer-btn:hover {
@@ -230,11 +231,19 @@ Kontrollera ändå att layouten & responsitiveten för övriga elementen fungera
   width: 45rem;    
 }
 
-#timeeditUrl:focus {
+/* KS tillägg 2026-01-01 för nya DIV med fält för ID (användare/kurs/grupp) */
+#cal-id {    
+    width: 35ch; 
+    font-size: 0.8rem;      
+}
+
+#timeeditUrl:focus,
+#cal-id:focus {
   outline: none;       /* Tar bort den blåa kanten vid fokus  */   
 }
 
-#timeeditUrl:placeholder-shown {    
+#timeeditUrl:placeholder-shown,
+#cal-id:placeholder-shown {    
   background-color: var(--form);  
   color: #404040;          /* Ändrar textfärgen */
   font-style: italic;   /* Gör texten kursiv */
@@ -307,7 +316,8 @@ select#kalendertyp {
 }
 
 .filter-row .filter-field label[for="kurskod"], 
-.filter-row .filter-field label[for="kalenderval"] {
+.filter-row .filter-field label[for="kalenderval"],
+.filter-row .filter-field label[for="kalender-id"] {
   margin-bottom: 6px;   
 }
 
@@ -315,7 +325,8 @@ select#kalendertyp {
   margin-bottom: 0px;   
 }
 
-#fetch-cal-btn.transfer-btn {
+#fetch-cal-btn.transfer-btn,
+#id-input.filter-field {
   margin-right: 20px;   
 }
 
