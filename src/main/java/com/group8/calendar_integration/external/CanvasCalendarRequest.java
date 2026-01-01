@@ -23,6 +23,11 @@ public final class CanvasCalendarRequest {
                 contextCode, title, startAt, endAt, locationName, description, comments);
     }
 
+    // KS tillägg 2026-01-01 för felsökning
+    public String getContextCode() {
+        return this.calendarEvent.getContextCode();
+    }
+
     public static class CalendarEventData {        // place nested fields in calendar_event object
         @JsonProperty("context_code")
         private String contextCode;
