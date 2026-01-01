@@ -63,6 +63,7 @@
 
     <section class="filter-row" aria-label="Kalenderöverföring">  
       
+      <!-- KS: This redundant DIV was on 2026-01-01 de-activated by "display: none" in CSS ... -->       
       <div class="filter-field" id="cal-type" aria-label="Kalendertyp">    
         <label for="kalenderval">Välj kalender i Canvas:</label> 
         <select id="kalendertyp" aria-label="Välj kalendertyp">
@@ -72,10 +73,21 @@
           <option value="kurs">Kurskalender</option>          
         </select>       
       </div> 
-      
+            
+      <!-- KS additions/modifications on 2026-01-01 begin here ... -->
+      <div class="filter-field" id="id-input" aria-label="Kalenderinput-ID">       
+        <label for="kalender-id">Canvas-ID för användare/kurs/grupp:</label>        
+        <input
+            type="text"
+            id="cal-id"
+            name="cal-id"
+            placeholder="Typ: user_123 / course_456 / group_789">
+      </div>
+      <!-- ... KS additions/modifications on 2026-01-01 end here -->
+
       <div class="filter-field" id="transfer-cal" aria-label="Överföring">       
         <label for="skicka-data"></label>  
-        <button class="transfer-btn" id="transfer-cal-btn" type="button">Överför kalender till Canvas</button>
+        <button class="transfer-btn" id="transfer-cal-btn" type="button">Överför till Canvas</button>
         <!--  <input type="button" class="transfer-btn" value="Överför kalender till Canvas">    Tidigare syntax för knappen  -->     
       </div>
     </section>
