@@ -5,6 +5,7 @@ const clearButton = document.getElementById("empty-cal-btn");
 const input = document.getElementById("timeeditUrl");
 const output = document.getElementById("json-output");   // for testing/dev. purposes
 
+// KS tillägg 
 const API_BASE = "";    // Kunde ändras från "" till "/kalender", men behövs det eller blir det då bara krångligare?
 const idInput = document.getElementById("cal-id"); // KS tillägg 2026-01-01 
 const tableBody = document.querySelector(".data-table tbody");
@@ -38,6 +39,7 @@ async function fetchJSON(path) {
   }
   return res.json();
 }
+
 
 // Event listener for the button
 button1.addEventListener("click", async () => {
@@ -223,8 +225,6 @@ function renderTable() {
 }
 /* ......... KS arbete slutar här */
 
-<<<<<<< HEAD
-=======
 function getCourseCodeName() {
   const urlParams = new URLSearchParams(window.location.search);
   const courseCode = urlParams.get("courseCode");
@@ -247,5 +247,3 @@ function getCourseCodeName() {
     }
     return { courseCode: null, courseName: null };
 }
-
->>>>>>> ddb54ef (Added dynamics for: Course code+name fields & Clear-fields button)

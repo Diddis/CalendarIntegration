@@ -127,17 +127,18 @@ public class CanvasService {
 
             // Include zoomlink if present
             if (e.getZoomLink() != null && !e.getZoomLink().isBlank()) {
-                if (description.length() > 0) description.append("<br>"); {
-                    description.append("Zoom-länk: ").append(e.getZoomLink());
-		} // re-added braces since it is a nested if-statement
+                if (description.length() > 0) {
+                    description.append("<br>"); 
+                }
+                description.append("Zoom-länk: ").append(e.getZoomLink());
             }
             
             String comment = "";
             if (e.getComments() != null && !e.getComments().isBlank()) {
                 comment = e.getComments();
                 // AI-tips: Om du vill att kommentaren ska synas i Canvas-beskrivningen:
-                if (description.length() > 0) description.append("<br>");
-                description.append("Kommentar: ").append(comment);
+                //if (description.length() > 0) description.append("<br>");   // kommenterade bort så att den inte syns på två ställen i canvas kalendern
+                //description.append("Kommentar: ").append(comment);
             }
             
             CanvasCalendarRequest request = new CanvasCalendarRequest(
@@ -151,7 +152,6 @@ public class CanvasService {
 
             requests.add(request);
 
-            // KS: Removed the extra/faulty curly braces previously here 
         }
 
         return requests;   // return array list of CanvasCalendarRequest objects
@@ -179,8 +179,7 @@ public class CanvasService {
                 // Post each event to Canvas
                 // The URL structure is based on Canvas API documentation at https://canvas.instructure.com/doc/api/calendar_events.html#method.calendar_events.create
 
-                // KS tillägg 2026-01-01 för felsökning
-                System.out.println("Skickar event med context_code: " + e.getContextCode());  
+                System.out.println("Skickar event med context_code: " + e.getContextCode());   // testing
                 
                 // Wrap body and headers into httpentity
                 HttpEntity<CanvasCalendarRequest> requestEntity = new HttpEntity<>(e, headers);
