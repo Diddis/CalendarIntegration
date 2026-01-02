@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
+
 /**
  * Class for converting TimeEdit json data to usable Canvas
  * calendar data, and POST REST service to Canvas.
@@ -63,7 +64,6 @@ public class CanvasService {
 
     /* Method for mapping TimeEdit objects to calender event objects for internal API use, 
      * including for showing info in frontend.
-     *
      * Returns list of CalendarEvents objects.
     */
    public List<CalendarEvent> mapToCalendarEvents(List<TimeEditReservation> reservations) {
@@ -96,7 +96,8 @@ public class CanvasService {
                 String comment = r.getColumns().get(7); 
 
                 events.add(new CalendarEvent(kurskod, kurs, startAt, endAt, activity, 
-                    location, person, zoomLink, comment));
+                    location, person, zoomLink, comment));               
+
             }
         }
 
@@ -119,21 +120,27 @@ public class CanvasService {
         for (CalendarEvent e: events) {
 
             StringBuilder description = new StringBuilder();         // string together several fields for Canvas description
-            // Include person if present
+            //  Include person if present
             if (e.getPerson() != null && !e.getPerson().isBlank()) {
                 description.append(e.getPerson()).append("<br>");
             }
+
             // Include zoomlink if present
             if (e.getZoomLink() != null && !e.getZoomLink().isBlank()) {
-                if (description.length() > 0) description.append("<br>"); {
-                    description.append("Zoom-länk: ").append(e.getZoomLink());
+                if (description.length() > 0) {
+                    description.append("<br>"); 
+                }
+                description.append("Zoom-länk: ").append(e.getZoomLink());
             }
-
-            String comments = "";
-            if (e.getcomments() != null && !e.getcomments().isBlank()) {
-                comments = e.getcomments();
+            
+            String comment = "";
+            if (e.getComments() != null && !e.getComments().isBlank()) {
+                comment = e.getComments();
+                // AI-tips: Om du vill att kommentaren ska synas i Canvas-beskrivningen:
+                //if (description.length() > 0) description.append("<br>");   // kommenterade bort så att den inte syns på två ställen i canvas kalendern
+                //description.append("Kommentar: ").append(comment);
             }
-
+            
             CanvasCalendarRequest request = new CanvasCalendarRequest(
                 contextCode, 
                 e.getActivity() + " (TE)",       // add TE title to indicate TimeEdit origin
@@ -141,10 +148,10 @@ public class CanvasService {
                 e.getEndAt().toString(),
                 e.getLocationName(),
                 description.toString(),
-                comments);
+                comment);
 
             requests.add(request);
-            } 
+
         }
 
         return requests;   // return array list of CanvasCalendarRequest objects
@@ -172,6 +179,8 @@ public class CanvasService {
                 // Post each event to Canvas
                 // The URL structure is based on Canvas API documentation at https://canvas.instructure.com/doc/api/calendar_events.html#method.calendar_events.create
 
+                System.out.println("Skickar event med context_code: " + e.getContextCode());   // testing
+                
                 // Wrap body and headers into httpentity
                 HttpEntity<CanvasCalendarRequest> requestEntity = new HttpEntity<>(e, headers);
 
