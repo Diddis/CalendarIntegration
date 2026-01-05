@@ -1,7 +1,7 @@
 package com.group8.calendar_integration;
 import com.group8.calendar_integration.external.CanvasCalendarRequest;
 import com.group8.calendar_integration.external.TimeEditReservation;
-import com.group8.calendar_integration.model.CalendarEvent;
+import com.group8.calendar_integration.Model.CalendarEvent;
 
 import java.util.ArrayList;
 import java.util.List;

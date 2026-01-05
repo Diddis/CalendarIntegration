@@ -72,8 +72,17 @@
           <option value="kurs">Kurskalender</option>          
         </select>       
       </div> 
+       
             
-      <!-- KS additions/modifications on 2026-01-01 begin here ... -->
+      <!-- KS additions/modifications on 2026-01-04 begin here ... -->
+      <div class="filter-field" id="markings" aria-label="Markering">       
+        <label for="markera-data">Markera:</label>  
+        <button class="mark-btn" data-mark="all" id="mark-all-btn" type="button">Alla</button>
+        <button class="mark-btn" data-mark="none" id="mark-none-btn" type="button">Inga</button>   
+      </div>
+      <!-- ... KS additions/modifications on 2026-01-04 end here -->
+
+      
       <div class="filter-field" id="id-input" aria-label="Kalenderinput-ID">       
         <label for="kalender-id">Canvas-ID för användare/kurs/grupp:</label>        
         <input
@@ -82,12 +91,11 @@
             name="cal-id"
             placeholder="Typ: user_123 / course_456 / group_789">
       </div>
-      <!-- ... KS additions/modifications on 2026-01-01 end here -->
 
-      <div class="filter-field" id="transfer-cal" aria-label="Överföring">       
-        <label for="skicka-data"></label>  
-        <button class="transfer-btn" id="transfer-cal-btn" type="button">Överför till Canvas</button>
-        <!--  <input type="button" class="transfer-btn" value="Överför kalender till Canvas">    Tidigare syntax för knappen  -->     
+      <div class="filter-field" id="transfer-cal" aria-label="Överföring"> 
+        <div class="selected">Antal markerade: <span id="count">0</span></div>       
+        <!-- <label for="skicka-data">Antal markerade: </label>  --> 
+        <button class="transfer-btn" id="transfer-cal-btn" type="button">Överför till Canvas</button> 
       </div>
     </section>
     
