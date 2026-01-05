@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.group8.calendar_integration.external.CanvasCalendarRequest;
 import com.group8.calendar_integration.external.TimeEditRoot;
-import com.group8.calendar_integration.model.CalendarEvent;
+import com.group8.calendar_integration.Model.CalendarEvent;
 
 import java.util.List;
 
