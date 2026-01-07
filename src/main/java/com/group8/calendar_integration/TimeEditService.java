@@ -1,7 +1,18 @@
 package com.group8.calendar_integration;
+import com.group8.calendar_integration.external.TimeEditReservation;
 import com.group8.calendar_integration.external.TimeEditRoot;
+import com.group8.calendar_integration.model.CalendarEvent;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,17 +25,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  */
 @Service
 public class TimeEditService {
-
-    public static String convertHTMLtoJSON(String timeEditURL) {
-
-        if (timeEditURL == null || !timeEditURL.endsWith(".html")) {
-            throw new IllegalArgumentException("Invalid URL");                 // fixa sen så att mdeddelandet visas på webbsidan och är användarvänligt
-        }
-
-        return timeEditURL.substring(0, timeEditURL.length() - 5) + ".json";
-
-    }
-
 
     /* Fetches the Json data from TimeEdit. Deserialize using POJO.
      * Returns TimeEditRoot object containing list of TimeEditReservation objects.
@@ -64,14 +64,86 @@ public class TimeEditService {
 
     }
 
-    
 
+    /* Method for mapping TimeEdit objects to calender event objects for internal API use, 
+     * including for showing info in frontend.
+     * Returns list of CalendarEvents objects.
+    */
+    public List<CalendarEvent> mapToCalendarEvents(List<TimeEditReservation> reservations) {
+        
+        List<CalendarEvent> events = new ArrayList<>(); 
+        Set<String> courseCodes = new java.util.HashSet<>();
+
+        // For each TimeEdit reservation, map to CalendarEvents format
+        for (TimeEditReservation r: reservations) {
+
+            // Only return events with a course code, so that we don't post generic events (like holidays)
+            //if (r.getColumns().size() < 2) continue;  // safety check to avoid index out of bounds  
+            String kurskod = r.getColumns().get(2).trim();
+            if (kurskod.isEmpty()) continue;
+            courseCodes.add(kurskod);  // collect course codes for validation
+
+            LocalDate startDate = LocalDate.parse(r.getStartdate());
+            LocalTime startTime = LocalTime.parse(r.getStarttime());
+            LocalDate endDate = LocalDate.parse(r.getEnddate());
+            LocalTime endTime = LocalTime.parse(r.getEndtime());
+
+            Instant startAt = ZonedDateTime.of(startDate, startTime,
+                ZoneOffset.UTC).toInstant();
+            Instant endAt = ZonedDateTime.of(endDate, endTime,
+                ZoneOffset.UTC).toInstant();
+
+            // Mapping TimeEdit json columns
+            String kurs = r.getColumns().get(3);
+            String activity = r.getColumns().get(0);
+            String location = r.getColumns().get(1);
+            String person = r.getColumns().get(5);
+            String zoomLink = r.getColumns().get(8);
+            String comment = r.getColumns().get(7); 
+
+            events.add(new CalendarEvent(kurskod, kurs, startAt, endAt, activity, 
+                location, person, zoomLink, comment));               
+
+        }
+
+        // Validate that only one course is present
+        validateSingleCourse(courseCodes);
+
+        return events;   // return array list of CalendarEvents objects   
+        
+    }
+
+
+    // --------------- Helper methods below --------------------------
+
+    /* Helper method for converting HTML URL to JSON URL */
+    private static String convertHTMLtoJSON(String timeEditURL) {
+
+        if (timeEditURL == null || !timeEditURL.endsWith(".html")) {
+            throw new IllegalArgumentException("Invalid URL");          
+        }
+
+        return timeEditURL.substring(0, timeEditURL.length() - 5) + ".json";
+
+    }
+
+    /* Helper method for validating that only events
+     * for one course are present in TimeEdit data.
+     */
+    private void validateSingleCourse(Set<String> courseCodes) {
+        if (courseCodes.size() > 1) {
+            throw new IllegalArgumentException("TimeEdit kalendern innehåller händelser från flera kurser. Hämta en ny TimeEdit kalender URL för endast en kurs.");
+        }
+    }
+
+    
     // Error handling
     public static class TimeEditParseException extends RuntimeException {
         public TimeEditParseException(String message, Throwable cause) {
             super(message, cause);
         }
     }
+    
 
 
 }

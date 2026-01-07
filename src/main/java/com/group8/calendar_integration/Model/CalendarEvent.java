@@ -1,4 +1,4 @@
-package com.group8.calendar_integration.Model;
+package com.group8.calendar_integration.model;
 
 import java.time.Instant;
 

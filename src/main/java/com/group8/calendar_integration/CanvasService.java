@@ -1,17 +1,13 @@
 package com.group8.calendar_integration;
 import com.group8.calendar_integration.external.CanvasCalendarRequest;
-import com.group8.calendar_integration.external.TimeEditReservation;
-import com.group8.calendar_integration.Model.CalendarEvent;
+import com.group8.calendar_integration.model.CalendarEvent;
+import com.group8.calendar_integration.model.PostResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -20,8 +16,8 @@ import org.springframework.http.HttpHeaders;
 
 
 /**
- * Class for converting TimeEdit json data to usable Canvas
- * calendar data, and POST REST service to Canvas.
+ * Class for mapping TimeEdit calendar data to Canvas json format, 
+ * and POST REST service method to Canvas.
  * 
  * Using this tutorial for json-pojo conversion:
  * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
@@ -62,50 +58,6 @@ public class CanvasService {
     }
 
 
-    /* Method for mapping TimeEdit objects to calender event objects for internal API use, 
-     * including for showing info in frontend.
-     * Returns list of CalendarEvents objects.
-    */
-   public List<CalendarEvent> mapToCalendarEvents(List<TimeEditReservation> reservations) {
-        
-        List<CalendarEvent> events = new ArrayList<>(); 
-
-        // For each TimeEdit reservation, map to CalendarEvents format
-        for (TimeEditReservation r: reservations) {
-
-            // Only return events with a course code, so that we don't post generic events (like holidays)
-            if (r.getColumns().get(2) != null && !r.getColumns().get(2).isBlank()) {
-
-                LocalDate startDate = LocalDate.parse(r.getStartdate());
-                LocalTime startTime = LocalTime.parse(r.getStarttime());
-                LocalDate endDate = LocalDate.parse(r.getEnddate());
-                LocalTime endTime = LocalTime.parse(r.getEndtime());
-
-                Instant startAt = ZonedDateTime.of(startDate, startTime,
-                    ZoneOffset.UTC).toInstant();
-                Instant endAt = ZonedDateTime.of(endDate, endTime,
-                    ZoneOffset.UTC).toInstant();
-
-                // Mapping TimeEdit json columns
-                String kurskod = r.getColumns().get(2);
-                String kurs = r.getColumns().get(3);
-                String activity = r.getColumns().get(0);
-                String location = r.getColumns().get(1);
-                String person = r.getColumns().get(5);
-                String zoomLink = r.getColumns().get(8);
-                String comment = r.getColumns().get(7); 
-
-                events.add(new CalendarEvent(kurskod, kurs, startAt, endAt, activity, 
-                    location, person, zoomLink, comment));               
-
-            }
-        }
-
-        return events;   // return array list of CalendarEvents objects   
-        
-    }
-
-
     /* Method for mapping nested CalendarEvent objects to CanvasCalendarRequest objects for 
      * POSTING to Canvas API.
      * 
@@ -119,7 +71,16 @@ public class CanvasService {
         // For each TimeEdit reservation, map to Canvas event format
         for (CalendarEvent e: events) {
 
-            StringBuilder description = new StringBuilder();         // string together several fields for Canvas description
+            StringBuilder description = new StringBuilder();         // string together several fields for description
+            // Add course code and name
+            if (e.getKurskod() != null && !e.getKurskod().isBlank()) {
+                description.append(e.getKurskod());
+                if (e.getKurs() != null && !e.getKurs().isBlank()) {
+                    description.append(", ").append(e.getKurs());
+                }
+                description.append("<br>");
+            }
+            
             //  Include person if present
             if (e.getPerson() != null && !e.getPerson().isBlank()) {
                 description.append(e.getPerson()).append("<br>");
@@ -159,40 +120,58 @@ public class CanvasService {
     }
 
     /* REST call to Canvas API to post calendar events
+     * The URL structure is based on Canvas API documentation at https://canvas.instructure.com/doc/api/calendar_events.html#method.calendar_events.create
      * Loop through reservations and post each reservation/event using REST
      * 
-     * Returns success message or throws exception on error
+     * Returns PostResult object with number of successful and failed posts, along with list of failed posts if any
      */
 
-    public String RESTPostCanvasEvents(List<CanvasCalendarRequest> canvasEvents) {
-        try {
+    public PostResult RESTPostCanvasEvents(List<CanvasCalendarRequest> canvasEvents) {
 
-            // Construct the URL for posting calendar events
-            String canvasURL = "https://canvas.ltu.se/api/v1/calendar_events";
+        // Construct the URL for posting calendar events
+        String canvasURL = "https://canvas.ltu.se/api/v1/calendar_events";
 
-            // Build headers
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(canvasToken);
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        // Build headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(canvasToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-            for (CanvasCalendarRequest e : canvasEvents) {
-                // Post each event to Canvas
-                // The URL structure is based on Canvas API documentation at https://canvas.instructure.com/doc/api/calendar_events.html#method.calendar_events.create
+        // Error handling if a post fails. Collect events that fail
+        List<String> failedEvents = new ArrayList<>();
+        // Success counter
+        int successCount = 0;
 
-                System.out.println("Skickar event med context_code: " + e.getContextCode());   // testing
-                
-                // Wrap body and headers into httpentity
+        // Post each event to Canvas
+        for (CanvasCalendarRequest e : canvasEvents) {
+
+            try {
+                // Wrap body and headers into httpentity. 
                 HttpEntity<CanvasCalendarRequest> requestEntity = new HttpEntity<>(e, headers);
 
                 // Post the event
-                restTemplate.postForObject(canvasURL, requestEntity, String.class);
-            }
-            return "All events posted successfully to Canvas.";
-        } 
-        catch (RestClientException e) {
-            throw new RuntimeException("Error posting events to Canvas", e);
-        }
-    }
+                ResponseEntity<String> response = restTemplate.postForEntity(canvasURL, requestEntity, String.class);
 
+                // Check if status is 200-299
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    successCount++;
+                    System.out.println("Skickar event med context_code: " + e.getContextCode());   // testing
+                } else {
+                    // Log the failed event
+                    failedEvents.add(e.getTitle() + " at " + e.getStartAt());
+                }
+
+            // Catch other RestClientExceptions (like network, timeout, other errors)
+            } catch (RestClientException ex) {
+                failedEvents.add(e.getTitle() + " at " + e.getStartAt());
+            }
+        } // end for loop
+
+        // Return result message
+        return new PostResult(
+            successCount,
+            failedEvents.size(),
+            failedEvents);
+
+    } // end method
 
 }

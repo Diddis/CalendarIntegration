@@ -1,6 +1,5 @@
 package com.group8.calendar_integration.external;
 
-import java.sql.Time;
 import java.util.List;
 
 /**

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class CanvasCalendarRequest {
 
     @JsonProperty("calendar_event")
-    private CalendarEventData calendarEvent;   // nest all fields inside this object
+    private CanvasEventData canvasEvent;   // nest all fields inside this object
 
     public CanvasCalendarRequest(String contextCode,
                                  String title,
@@ -19,16 +19,23 @@ public final class CanvasCalendarRequest {
                                  String locationName,
                                  String description,
                                  String comments) {
-        this.calendarEvent = new CalendarEventData(
+        this.canvasEvent = new CanvasEventData(
                 contextCode, title, startAt, endAt, locationName, description, comments);
     }
 
-    // KS tillägg 2026-01-01 för felsökning
-    public String getContextCode() {
-        return this.calendarEvent.getContextCode();
+    public String getTitle() {
+        return this.canvasEvent.getTitle();
     }
 
-    public static class CalendarEventData {        // place nested fields in calendar_event object
+    public String getStartAt() {
+        return this.canvasEvent.getStartAt();
+    }
+
+    public String getContextCode() {
+        return this.canvasEvent.getContextCode();
+    }
+
+    public static class CanvasEventData {        // place nested fields in calendar_event object
         @JsonProperty("context_code")
         private String contextCode;
         @JsonProperty("title")
@@ -45,62 +52,58 @@ public final class CanvasCalendarRequest {
         private String comments;
 
         // Constructor
-        public CalendarEventData(String contextCode,
-                                 String title,
-                                 String startAt,
-                                 String endAt,
-                                 String locationName,
-                                 String description,
-                                 String comments) {
-            this.contextCode = contextCode;
-            this.title = title;
-            this.startAt = startAt;
-            this.endAt = endAt;
-            this.locationName = locationName;
-            this.description = description;
-            this.comments = comments;
-        }
+        public CanvasEventData(String contextCode, String title,
+            String startAt, String endAt, String locationName,
+            String description, String comments) {
+                this.contextCode = contextCode;
+                this.title = title;
+                this.startAt = startAt;
+                this.endAt = endAt;
+                this.locationName = locationName;
+                this.description = description;
+                this.comments = comments;
+            }
     
 
-        public String getContextCode() {
-            return contextCode;
-        }
+            public String getContextCode() {
+                return contextCode;
+            }
 
-        public void setContextCode(String contextCode) {
-            this.contextCode = contextCode;
-        }
+            public void setContextCode(String contextCode) {
+                this.contextCode = contextCode;
+            }
 
-        public String getTitle() {
-            return title;
-        }
+            public String getTitle() {
+                return title;
+            }
 
-        public String getStartAt() {
-            return startAt;
-        }
+            public String getStartAt() {
+                return startAt;
+            }
 
-        public String getEndAt() {
-            return endAt;
-        }
+            public String getEndAt() {
+                return endAt;
+            }
 
-        public String getLocationName() {
-            return locationName;
-        }
+            public String getLocationName() {
+                return locationName;
+            }
 
-        public String getDescription() {
-            return description;
-        }
+            public String getDescription() {
+                return description;
+            }
 
-        public String getComments() {
-            return comments;
-        }
+            public String getComments() {
+                return comments;
+            }
 
 
-        @Override
-        public String toString() {
-            return "CanvasEvent [contextCode=" + contextCode + ", title=" + title 
-                    + ", startAt=" + startAt + ", endAt=" + endAt + ", locationName="
-                    + locationName + ", description=" + description + ", comments=" + comments + "]";
-        }
+            @Override
+            public String toString() {
+                return "CanvasEvent [contextCode=" + contextCode + ", title=" + title 
+                        + ", startAt=" + startAt + ", endAt=" + endAt + ", locationName="
+                        + locationName + ", description=" + description + ", comments=" + comments + "]";
+            }
 
         
     }
