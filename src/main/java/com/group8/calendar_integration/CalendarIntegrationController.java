@@ -40,7 +40,7 @@ public class CalendarIntegrationController {
      * Returns either mapped Canvas events or error message.
      */
     @GetMapping("/timeEditURL")    // Http endpoint for first button
-    public ResponseEntity<?> getCanvasEvents(@RequestParam String url) {
+    public ResponseEntity<?> getTimeEditEvents(@RequestParam String url) {
 
         try {
             // Fetch TimeEdit data as POJO
@@ -55,7 +55,7 @@ public class CalendarIntegrationController {
         } catch (IllegalArgumentException e) { 
             // Error, multiple courses or invalid URL, error 400
             return ResponseEntity.badRequest().body(
-                java.util.Map.of("error", "Kunde inte hämta TimeEdit-data: " + e.getMessage()));
+                java.util.Map.of("error", "Kunde inte hämta TimeEdit-data. " + e.getMessage()));
         
         } catch (Exception e) {
             e.printStackTrace();   // for debugging

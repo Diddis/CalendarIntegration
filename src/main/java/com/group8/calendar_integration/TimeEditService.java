@@ -4,6 +4,8 @@ import com.group8.calendar_integration.external.TimeEditRoot;
 import com.group8.calendar_integration.model.CalendarEvent;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -30,9 +33,11 @@ public class TimeEditService {
      * Returns TimeEditRoot object containing list of TimeEditReservation objects.
      */
     public static TimeEditRoot fetchCalendar(String url) {
-        
+        // Validate URL
+        URI uri = parseAndValidate(url);
+
         // Convert url ending to json
-        String jsonUrl = convertHTMLtoJSON(url);
+        URI jsonUri = convertHTMLtoJSON(uri);
 
         // Make an instanace of RestTemplate - Spring’s HTTP client for making HTTP requests.
         // In this case, using to get content from the static JSON URL
@@ -42,8 +47,14 @@ public class TimeEditService {
         // (Converting first to String to bypass the fact that the server sends json data 
         // but marks it as text/html, so RestTemplate isn't reading it as json data
         // so can't automatically turn it into java object - manually doing that with mapper below.
-        String jsonString = restTemplate.getForObject(jsonUrl, String.class);
-
+        String jsonString;
+        try {
+            jsonString = restTemplate.getForObject(jsonUri, String.class);
+        } catch (RestClientException e) {    // handle errors if failed to fetch data
+            throw e;
+        }
+        
+        // Deserialize JSON string to TimeEditRoot object
         try {
             // Create object mapper instance
             ObjectMapper mapper = new ObjectMapper();
@@ -107,6 +118,7 @@ public class TimeEditService {
         }
 
         // Validate that only one course is present
+        System.out.println("DEBUG: courseCodes = " + courseCodes);   // test
         validateSingleCourse(courseCodes);
 
         return events;   // return array list of CalendarEvents objects   
@@ -117,14 +129,42 @@ public class TimeEditService {
     // --------------- Helper methods below --------------------------
 
     /* Helper method for converting HTML URL to JSON URL */
-    private static String convertHTMLtoJSON(String timeEditURL) {
+    private static URI convertHTMLtoJSON(URI timeEditURI) {
 
-        if (timeEditURL == null || !timeEditURL.endsWith(".html")) {
-            throw new IllegalArgumentException("Invalid URL");          
+        String jsonPath = timeEditURI.getPath().substring(
+            0, timeEditURI.getPath().length() - 5) + ".json";
+
+        return timeEditURI.resolve(jsonPath);
+    }
+
+    /* Validate the URL, such as if it comes from a different site, is empty, etc. */
+    private static URI parseAndValidate(String url) {
+        
+        if (url == null || url.isEmpty()) {
+            throw new IllegalArgumentException("URL kan inte vara tom.");
         }
+        
+        try {
+            URI uri = new URI(url);
 
-        return timeEditURL.substring(0, timeEditURL.length() - 5) + ".json";
+            if (!uri.getHost().toLowerCase().endsWith("timeedit.net")) {
+                throw new IllegalArgumentException("URL måste komma från TimeEdit.");
+            }
 
+            if (!uri.getPath().endsWith(".html")) {
+                throw new IllegalArgumentException("URL måste sluta med .html.");
+            }
+
+            if (!"https".equalsIgnoreCase(uri.getScheme())) {
+                throw new IllegalArgumentException("Endast URL med HTTPS protokoll.");
+            }
+
+            return uri;
+
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Ogiltig URL: " + e.getMessage());
+        }
+            
     }
 
     /* Helper method for validating that only events

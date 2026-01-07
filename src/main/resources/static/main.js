@@ -33,16 +33,30 @@ clearButton.addEventListener("click", () => {
 async function fetchJSON(path) {  
   console.log("Hämtar kalenderhändelser från: ", path);  
   const res = await fetch(`${API_BASE}${path}`);
-  if (!res.ok) {
-    throw new Error(`Kunde inte läsa från: ${path} : ${res.status}`);
+  
+  // Try to read response body as JSON
+  let data;
+
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
   }
-  return res.json();
+  
+  if (!res.ok) {
+    // If backend sends an error status code, throw an error with message
+    const message = data?.error || `Kunde inte läsa från servern: ${res.status}`;
+    
+    throw new Error(message);
+  }
+  return data;
 }
 
 // Event listener for the button
 button1.addEventListener("click", async () => {
     const url = input.value.trim();
 
+    // Check if URL input is empty
     if (!url) {
         alert("Fyll i en TimeEdit-URL.");
         return;
@@ -61,8 +75,7 @@ button1.addEventListener("click", async () => {
         // Call function to add boolean property 'marked' to events, also update global 'events' variable 
         addMarkedToEvents();
 
-        // Display the JSON nicely formatted for testing
-        output.textContent = JSON.stringify(events, null, 2);  
+        //output.textContent = JSON.stringify(events, null, 2);  // Display the JSON nicely formatted for testing
         
         // Render the table with the fetched events
         renderTable(); 
@@ -76,9 +89,11 @@ button1.addEventListener("click", async () => {
         // TESTING: document.getElementById("course-header").innerText = `${info.courseCode} & ${info.courseName}`;      
         
 
+    // error handling for things like status codes from backend, parsing error, network failure
     } catch (err) {
         console.error(err);
-        alert("FEL: Kunde inte hämta data.");
+        // Use backend message if possible, else generic message
+        alert("FEL: " + err.message || "Kunde inte hämta kalenderhändelser från TimeEdit.");
     }
 });
 
@@ -117,20 +132,24 @@ button2.addEventListener("click", async () => {
           body: canvasData // Send events as JSON in the body
       });
 
+      // Try to parse response body as JSON from backend, else text
+      let result;
+      try {
+          result = await postResponse.json();
+      } catch {
+          result = await postResponse.text();
+      }
+
       // Kontrollera om statuskoden är OK, d.v.s. mellan 200-299
       if (postResponse.ok) {
-          output.textContent = `Status-kod: ` + postResponse.status; // Visa statuskoden i output-området
-          const successText = await postResponse.text();
-          output.textContent = `Success: ${successText}`;
-          output.textContent = `Response body: ` + successText; // Visa hela svaret 
+          //output.textContent = `Status-kod: ` + postResponse.status; // Visa statuskoden i output-området
+          output.textContent = `Success:\n` + JSON.stringify(result, null, 2);
+          //output.textContent = `Response body: ` + successText; // Visa hela svaret 
           alert("Skickat! Överföringen lyckades."); // Alert vid framgång
-
           clearButton.click();  // Clear all fields after posting data to Canvas 
       } else {          
-          const errorText = await postResponse.text();
-          output.textContent = `Failure: ${errorText}`;
-          output.textContent = `Response body: ` + errorText; // Visa hela svaret 
-          alert("FEL: " + errorText); // Alert-ruta med felmeddelandet från Java
+          output.textContent = `Failure: ${JSON.stringify(result, null, 2)}`;
+          alert("FEL: " + (typeof result === "string" ? result : JSON.stringify(result, null, 2))); 
       }        
             
   } catch (err) {
