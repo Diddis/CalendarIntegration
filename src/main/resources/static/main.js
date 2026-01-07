@@ -1,22 +1,19 @@
 // DOM elements
-const button1 = document.getElementById("fetch-cal-btn");   // I Uppgift-3 var denna id "transfer-btn". 
+const button1 = document.getElementById("fetch-cal-btn");   
 const button2 = document.getElementById("transfer-cal-btn");
 const clearButton = document.getElementById("empty-cal-btn");
 const input = document.getElementById("timeeditUrl");
 const output = document.getElementById("json-output");   // for testing/dev. purposes
 
-// KS tillägg 
-const API_BASE = "";    // Kunde ändras från "" till "/kalender", men behövs det eller blir det då bara krångligare?
-const idInput = document.getElementById("cal-id"); // KS tillägg 2026-01-01 
+const API_BASE = "";    // Kunde ändras från "" till "/kalender", men behövs det?
+const idInput = document.getElementById("cal-id"); 
 const tableBody = document.querySelector(".data-table tbody");
 const markedCount = document.getElementById("count");  
-// const errorEl = document.querySelector(".error-message");     KS: Element & klass för felmeddelande behövs till HTML
-const markAllBtn = document.getElementById("mark-all-btn");  // KS tillägg 2026-01-04
-const markNoneBtn = document.getElementById("mark-none-btn");  // KS tillägg 2026-01-04
+const markAllBtn = document.getElementById("mark-all-btn");  
+const markNoneBtn = document.getElementById("mark-none-btn"); 
 
-let events= [];  // I Uppgift-3 var denna variabel "students".
-let calTable = [];  // I Uppgift-3 var denna variabel "courseTabell". 
-let errorTimer = null;
+let events= [];  
+let calTable = [];  
 
 
 // Event listener for the button
@@ -26,14 +23,12 @@ clearButton.addEventListener("click", () => {
   document.getElementById("course-name-value").innerText = ``;
   document.getElementById("cal-id").value = "";  // KS tillägg 2026-01-01
 
-  output.textContent = "";    // Clear the output area from previous JSON data displayed (for testing purposes)
-  tableBody.innerHTML = "";   // Clear the table body
+  output.textContent = "";    // Clear output area from previous JSON data displayed (for testing purposes)
+  tableBody.innerHTML = "";   // Clear table body
   events = [];
   updateMarkedCount();      // Update the marked count to "0" 
   console.log("Alla fält är nu tömda."); 
 });
-
-
 
 async function fetchJSON(path) {  
   console.log("Hämtar kalenderhändelser från: ", path);  
@@ -43,7 +38,6 @@ async function fetchJSON(path) {
   }
   return res.json();
 }
-
 
 // Event listener for the button
 button1.addEventListener("click", async () => {
@@ -56,29 +50,24 @@ button1.addEventListener("click", async () => {
 
     try {
         // First, call the backend endpoint to fetch events from TimeEdit 
-        // Then, parse the JSON response and assign it to JS-variable 'events'
-        // ( Observe that the declaration-word "const" of 'events' was removed to make the variable global (shadowing issue) )
         const calEvents = await fetchJSON(`/kalender/timeEditURL?url=${encodeURIComponent(url)}`);
         
         // Debugging line for fetching events
         console.log("Following events were fetched:", calEvents);       
         
-        // Store the events in a global variable or pass them to the next function if needed
-        // window.eventsToPost = calEvents;   KS: Deactivated this statement as to use the global 'events' variable instead.
-
-        // KS: Assign fetched events to global variable 'events' for table rendering
+        // Assign fetched events to global variable 'events' for table rendering
         events = calEvents;  
 
-        // KS: Call function to add boolean property 'marked' to events, also update global 'events' variable 
+        // Call function to add boolean property 'marked' to events, also update global 'events' variable 
         addMarkedToEvents();
 
         // Display the JSON nicely formatted for testing
         output.textContent = JSON.stringify(events, null, 2);  
         
-        // KS: Render the table with the fetched events 
+        // Render the table with the fetched events
         renderTable(); 
 
-        // KS: Get course code and name (variables 'courseCode' & 'courseName') from the first event fetched   
+         
         const info = getCourseCodeName();
         console.log("Visar kursdata för:", info.courseCode + ": " + info.courseName);
         // Om du har ett element med id "course-header":
@@ -95,19 +84,13 @@ button1.addEventListener("click", async () => {
 
 
 // Event listener for the button
-button2.addEventListener("click", async () => {
-  // const events = window.eventsToPost;  KS: Deactivated this statement as to use the global 'events' variable instead.
-
-  // KS tillägg 2026-01-01 börjar här ...         
+button2.addEventListener("click", async () => {      
   const currentId = idInput.value.trim();  // Hämta det aktuella värdet vid knapptryckning ("Överför kalender")
   if (!currentId) {
       alert("Fyll i ett ID i fältet för att kunna överföra händelser.");
       return;
   }
-  // .... KS tillägg 2026-01-01 slutar här 
 
-
-  // KS 205-01-03 modifications start:
   // Create new filtered list and include only marked events
   const eventsToTransfer = events.filter(e => e.marked === true);  
 
@@ -115,37 +98,17 @@ button2.addEventListener("click", async () => {
       alert("FEL: Inga händelser att överföra.");
       return;
   }
-
-  /* KS: Kontroller att antalet markerade events stämmer med antal events i listan eventsToTransfer
-  alert("Antalet events i listan eventsToTransfer: " + eventsToTransfer.length); 
-  alert("Antalet events i variabeln markedCount: " + Number(markedCount.textContent)); 
-  */
   
   if (eventsToTransfer.length !== Number(markedCount.textContent)) {
       alert("FEL: Antalet markerade händelser motsvarar inte antalet som ska överföras. Överföringen avbruten.");
       return;
   }
   
-  // Använd sedan den nya variabeln i JSON.stringify
-  //  const canvasData = JSON.stringify(eventsToTransfer);  KS: Kopierade denna rad ner till "try" -blocket nedan. 
-  // .... KS 205-01-03 modifications end here
-
-  /*
-  events = events.filter(e => e.marked);  // KS 205-01-03: Filter and include only marked events to be posted to Canvas
-  // Here and onwards in the function using the global 'events' variable
-  if (!events || events.length === 0) {
-      alert("Inga händelser att överföra.");
-      return;
-  }
-  */
-
   try {
       console.log("Överför events till Canvas. Antal: ", eventsToTransfer.length);
       const canvasData = JSON.stringify(eventsToTransfer);
 
-      // Send the events to the backend Canvas endpoint via POST
-      //  const postResponse = await fetch('/kalender/postToCanvas', {   // KS ändring 2026-01-01
-      // KS ändring 2026-01-01 i raden nedan (const postResponse = ...)  
+      // Send the events to the backend Canvas endpoint via POST 
       const postResponse = await fetch(`/kalender/postToCanvas?idInputCode=${encodeURIComponent(currentId)}`, {  
           method: 'POST',
           headers: {
@@ -154,7 +117,6 @@ button2.addEventListener("click", async () => {
           body: canvasData // Send events as JSON in the body
       });
 
-      // KS tillägg 2026-01-01 börjar här ... 
       // Kontrollera om statuskoden är OK, d.v.s. mellan 200-299
       if (postResponse.ok) {
           output.textContent = `Status-kod: ` + postResponse.status; // Visa statuskoden i output-området
@@ -163,16 +125,14 @@ button2.addEventListener("click", async () => {
           output.textContent = `Response body: ` + successText; // Visa hela svaret 
           alert("Skickat! Överföringen lyckades."); // Alert vid framgång
 
-          clearButton.click();  // KS addition: Clear all fields after posting data to Canvas 
-      } else {
-          // Om statuskoden är t.ex. 400 eller 500
+          clearButton.click();  // Clear all fields after posting data to Canvas 
+      } else {          
           const errorText = await postResponse.text();
           output.textContent = `Failure: ${errorText}`;
           output.textContent = `Response body: ` + errorText; // Visa hela svaret 
           alert("FEL: " + errorText); // Alert-ruta med felmeddelandet från Java
       }        
-      // .... KS tillägg 2026-01-01 slutar här 
-      
+            
   } catch (err) {
       console.error(err);
       alert("FEL: Kunde inte överföra data till Canvas: " + err.message);
@@ -185,15 +145,11 @@ function renderTable() {
   const data = [...events]
 
   tableBody.innerHTML = data
-    .map((event, index) => {    // KS 2026-01-03: Lägg till index för checkbox-data-attribute 
-      const checkboxCell = event  // Innan 2025-01-02: event.editable (om checkboxen skulle visas => alltid false)
+    .map((event, index) => {    // Lägg till index för checkbox-data-attribute 
+      const checkboxCell = event  
         ? `<input aria-label="Markera ${event.startAt}" type="checkbox" data-index="${index}" 
         ${event.marked ? "checked" : ""} />`
         : "";
-
-      /*  Alternativ till koden ovan för att alltid visa checkboxar (oavsett om event.editable är true eller false)
-        const checkboxCell = `<input type="checkbox" data-id="${event.startAt}" ${event.marked ? "checked" : ""} />`;
-      */     
 
       const dateCell = event.startAt
         ? event.startAt.split('T')[0] : "";
@@ -209,16 +165,16 @@ function renderTable() {
       
       const placeCell = event.locationName
         ? event.locationName : "";
-        // ? event.locationName.replace("Zoom, ", "") : "";  Tar bort "Zoom, " från platsnamnet om det finns där.
 
-      const personCell = event.person
-        ? event.person : ""; 
+      /* Använd elementet "textarea" för person, zoom och kommentar för bättre radbrytning i placeholders */      
+      const personCell = `<textarea class="edit-person" data-index="${index}" 
+        placeholder="[Personer]">${event.person || ''}</textarea>`;
+     
+      const zoomCell = `<textarea class="edit-zoom" data-index="${index}" 
+        placeholder="[Zoom-länk]">${event.zoomLink || ''}</textarea>`;
 
-      const zoomCell = event.zoomLink
-        ? `<a href="${event.zoomLink}">https://ltu-se.zoom.us</a>` : "";
-
-      const commentCell = event.comments
-        ? event.comments : "";    
+      const commentCell = `<textarea class="edit-comment" data-index="${index}" 
+        placeholder="[Kommentar]">${event.comments || ''}</textarea>`;
 
       return `<tr>
         <td class="cell-check">${checkboxCell}</td>
@@ -240,14 +196,12 @@ function renderTable() {
   updateMarkedCount();   
 }
 
-
 function getCourseCodeName() {
   const urlParams = new URLSearchParams(window.location.search);
   const courseCode = urlParams.get("courseCode");
   const courseName = urlParams.get("courseName");
   return { courseCode, courseName };
 }
-
 
 function getCourseCodeName() {
     // Check for fetched events
@@ -264,7 +218,6 @@ function getCourseCodeName() {
     return { courseCode: null, courseName: null };
 }
 
-
 async function addMarkedToEvents() {
   // Uppdatera events direkt genom att mappa om varje event och lägga till 'marked'-egenskapen
   events = events.map(event => ({
@@ -272,40 +225,6 @@ async function addMarkedToEvents() {
     marked: false  // Alla event börjar som omarkerade, d.v.s. 'marked' = false
   }));
 }
-
-/*
-async function addMarkedToEvents() {
-const modifiedEvents = JSON.parse(JSON.stringify(events));
-const eventsMarked = modifiedEvents.map(event => ({
-  ...event,
-  marked: false  // Defaultvärde för 'marked' är false
-}));
-events = eventsMarked; // Update the objects of the global variable 'events' with the property 'marked'
-}
-*/
-
-/*
-function activateCheckboxes() {
-  // Koppla lyssnaren EN gång till tabellkroppen
-  tableBody.addEventListener("change", (e) => {
-    // Säkerställ att det var en checkbox-typ som klickades
-    if (e.target.matches('input[type="checkbox"]')) {
-            
-      // Låt ID vara en sträng för att matcha event.startAt exakt
-      const boxId = e.target.dataset.startAt; 
-      
-      // Hitta eventet i 'events' baserat på 'startAt'
-      const currentEvent = events.find((evt) => evt.startAt === boxId);
-      
-      if (currentEvent) {   // Kontrollera att eventet finns och hittades         
-        currentEvent.marked = e.target.checked;   // Uppdatera variabeln 'marked' baserat på checkboxens aktuella status
-        console.log("Event uppdaterat:", currentEvent);  // Testutskrift 
-      }
-    }
-  });
-}
-*/
-
 
 function activateCheckboxes() {
   console.log("DEBUG: activateCheckboxes har körts. tableBody är:", tableBody);
@@ -336,10 +255,31 @@ function activateCheckboxes() {
   });
 }
 
+function activateTableEditing() {
+  // Här används typen "input" för att fånga ändringar då användare skriver i fälten
+  tableBody.addEventListener("input", (e) => {
+    const ind = e.target.dataset.index;  // Hämta index från attributet "data-index" (= eventens index i events-listan)
+    if (!ind) return;
+
+    const thisEvent = events[Number(ind)];  // Hämta själva event-objektet baserat på dess index
+    if (!thisEvent) return;
+
+    if (e.target.classList.contains("edit-person")) {
+      // Uppdatera person-variabeln i event-objektet med det nya/ändrade värdet i input-fältet
+      thisEvent.person = e.target.value; 
+    } else if (e.target.classList.contains("edit-comment")) {
+      // Uppdatera comments-variabeln i event-objektet med det nya/ändrade värdet i input-fältet
+      thisEvent.comments = e.target.value;
+    } else if (e.target.classList.contains("edit-zoom")) {
+      // Uppdatera zoomLink-variabeln i event-objektet med det nya/ändrade värdet i input-fältet
+      thisEvent.zoomLink = e.target.value;
+    }
+  });
+}
+
 markAllBtn?.addEventListener("click", () => {  
   // Uppdatera alla events för att sätta 'marked' = true
   events = events.map((e) => ({ ...e, marked: true }));
-
   // Ritar om tabellen med den nya datan och därmed med alla checkboxar markerade
   renderTable();
 });
@@ -347,7 +287,6 @@ markAllBtn?.addEventListener("click", () => {
 markNoneBtn?.addEventListener("click", () => {  
   // Uppdatera alla events för att sätta 'marked' = false
   events = events.map((e) => ({ ...e, marked: false }));
-
   // Ritar om tabellen med den nya datan och därmed med alla checkboxar omarkerade
   renderTable();
 });
@@ -357,5 +296,6 @@ function updateMarkedCount() {
   markedCount.textContent = markedEventCount;
 }
 
-// Anropa funktionen 1) utanför och innan "renderTable" och 2) bara en gång när scriptet laddas
+// Anropa "activateCheckboxes" 1) utanför och innan "renderTable" och 2) bara en gång när scriptet laddas
 activateCheckboxes();   
+activateTableEditing()
