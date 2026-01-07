@@ -29,15 +29,13 @@
 
       <div class="filter-field">          
         <label for="kalenderdata"></label>         
-        <button class="transfer-btn" id="fetch-cal-btn" type="button">Hämta kalenderdata</button> 
-        <!-- Tidigare kod för knappen: <input type="button" class="transfer-btn" value="Hämta kalenderdata">  -->  
+        <button class="transfer-btn" id="fetch-cal-btn" type="button">Hämta kalenderdata</button>          
       </div>
 
       <div class="filter-field">          
         <label for="kalenderrensning"></label>         
         <button class="transfer-btn" id="empty-cal-btn" type="button">Töm alla fält</button> 
       </div>
-
     </section>
 
     <section class="filter-row" aria-label="Kursinfo"> 
@@ -46,7 +44,6 @@
           Kurskod:
         </p>
         <p id="course-code-value">
-          <!-- Testing rendering with: "D0031N" -->
         </p>
       </div>
 
@@ -55,14 +52,12 @@
           Kursnamn:
         </p>
         <p id="course-name-value">
-          <!-- Testing rendering with: "Enterprise Architecture och SOA" -->
         </p>
       </div>
     </section>
 
-    <section class="filter-row" aria-label="Kalenderöverföring">  
-      
-      <!-- KS: This redundant DIV was on 2026-01-01 de-activated by "display: none" in CSS ... -->       
+    <section class="filter-row" aria-label="Kalenderöverföring">      
+      <!-- KS: This redundant DIV "cal-type" is de-activated by "display: none" in CSS -->       
       <div class="filter-field" id="cal-type" aria-label="Kalendertyp">    
         <label for="kalenderval">Välj kalender i Canvas:</label> 
         <select id="kalendertyp" aria-label="Välj kalendertyp">
@@ -71,17 +66,13 @@
           <option value="grupp">Gruppkalender</option>
           <option value="kurs">Kurskalender</option>          
         </select>       
-      </div> 
-       
-            
-      <!-- KS additions/modifications on 2026-01-04 begin here ... -->
+      </div>                   
+
       <div class="filter-field" id="markings" aria-label="Markering">       
         <label for="markera-data">Markera:</label>  
         <button class="mark-btn" data-mark="all" id="mark-all-btn" type="button">Alla</button>
         <button class="mark-btn" data-mark="none" id="mark-none-btn" type="button">Inga</button>   
       </div>
-      <!-- ... KS additions/modifications on 2026-01-04 end here -->
-
       
       <div class="filter-field" id="id-input" aria-label="Kalenderinput-ID">       
         <label for="kalender-id">Canvas-ID för användare/kurs/grupp:</label>        
@@ -93,9 +84,12 @@
       </div>
 
       <div class="filter-field" id="transfer-cal" aria-label="Överföring"> 
-        <div class="selected">Antal markerade: <span id="count">0</span></div>       
-        <!-- <label for="skicka-data">Antal markerade: </label>  --> 
+        <div class="selected">Antal markerade: <span id="count">0</span></div> 
         <button class="transfer-btn" id="transfer-cal-btn" type="button">Överför till Canvas</button> 
+      </div>
+
+      <div class="filter-field" id="note-info" aria-label="Notering"> 
+        <div class="note">    <span>    * Stjärna avser redigerbara fält</span></div>       
       </div>
     </section>
     
@@ -109,60 +103,37 @@
             <tr>
               <th class="col-check"></th>
               <th class="col-date sortable" data-sort-key="date" scope="col" aria-sort="ascending">
-                Datum <span class="sort sort-asc" aria-hidden="true"></span>
+                Datum<span class="sort sort-asc" aria-hidden="true"></span>
               </th>
               <th class="col-time sortable" data-sort-key="time" scope="col">
-                Tid <span class="sort" aria-hidden="true"></span>
+                Tid<span class="sort" aria-hidden="true"></span>
               </th>
               <th class="col-activity sortable" data-sort-key="activity-place" scope="col">
-                Aktivitet & Plats <span class="sort" aria-hidden="true"></span>
+                Aktivitet & Plats<span class="sort" aria-hidden="true"></span>
               </th>
               <th class="col-person sortable" data-sort-key="person" scope="col">
-                Anställd, Student <span class="sort" aria-hidden="true"></span>
+                Anställd, Student *<span class="sort" aria-hidden="true"></span>
               </th>
               <th class="col-zoom sortable" data-sort-key="zoom" scope="col">
-                Zoom-länk <span class="sort" aria-hidden="true"></span>
+                Zoom-länk *<span class="sort" aria-hidden="true"></span>
               </th>
               <th class="col-comments sortable" data-sort-key="comments" scope="col">
-                Kommentarer <span class="sort" aria-hidden="true"></span>
+                Kommentarer *<span class="sort" aria-hidden="true"></span>
               </th>
             </tr>
           </thead>
-          <tbody>         
-            <!-- KS: Table-data har hårdkodats hit bara för att testa HTML och CSS ......... 
-            <tr>  
-              <td class="col-check"><input type="checkbox" /></td>
-              <td class="date">2024-09-03</td>
-              <td class="time">10:15 - 11:45</td>
-              <td class="activity-place">Föreläsning, Sal A741</td>
-              <td class="person">Madhu Kumari</td>
-              <td class="zoom"><a href="https://ltu-se.zoom.us/1234567890">https://ltu-se.zoom.us</a></td>
-              <td class="comments">Kursintroduktion. Spelas in.</td>
-            </tr>
-            <tr>
-              <td class="col-check"><input type="checkbox" /></td>
-              <td class="date">2024-09-10</td>
-              <td class="time">13:00 - 14:30</td>
-              <td class="activity-place">Föreläsning, Sal B109</td>
-              <td class="person">Ingemar Andersson</td>
-              <td class="zoom"><a href="https://ltu-se.zoom.us/1234567890">https://ltu-se.zoom.us</a></td>
-              <td class="comments">Intro till Uppgift 1</td>
-            </tr> 
-            ........ KS: Slut på tillförd table-data här (I Uppgift-3 var tabell-data bara: <tbody></tbody> ) -->
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
     </section>
 
-    <!-- ....KS-tillägg slutar här -->
-
+    <!-- REMOVE <PRE>-element below for final project-version  -->
     <pre id="json-output" class="json-display"></pre>  
 
-  </main>
-
+  </main>  
 </div>
 
-    <script src="main.js"></script>
+<script src="main.js"></script>
 
 </body>
 </html>
