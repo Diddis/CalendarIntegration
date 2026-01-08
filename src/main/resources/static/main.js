@@ -140,22 +140,34 @@ button2.addEventListener("click", async () => {
           result = await postResponse.text();
       }
 
-      // Kontrollera om statuskoden är OK, d.v.s. mellan 200-299
+      console.log("PostResult from backend:", result);    // testing
+
+      // Skriva meddelande till användaren baserat på resultatet från backend
       if (postResponse.ok) {
-          //output.textContent = `Status-kod: ` + postResponse.status; // Visa statuskoden i output-området
-          output.textContent = `Success:\n` + JSON.stringify(result, null, 2);
-          //output.textContent = `Response body: ` + successText; // Visa hela svaret 
-          alert("Skickat! Överföringen lyckades."); // Alert vid framgång
-          clearButton.click();  // Clear all fields after posting data to Canvas 
-      } else {          
-          output.textContent = `Failure: ${JSON.stringify(result, null, 2)}`;
-          alert("FEL: " + (typeof result === "string" ? result : JSON.stringify(result, null, 2))); 
-      }        
-            
+        const {successCount, failureCount, failedEvents} = result;
+
+        if (successCount >0 && failureCount === 0) {
+          alert(`Skickat! ${successCount} händelser överfördes.`);
+          clearButton.click();  // Clear all fields after post
+
+        } else if (successCount > 0 && failureCount > 0) {
+          alert(`Delvis lyckat! ${successCount} händelser överördes\n` +
+                `men ${failureCount} misslyckades:\n` +
+                `Misslyckade händelser:\n` +
+                failedEvents.join("\n"));
+          clearButton.click();  // Clear all fields after post
+
+        } else {
+          alert(`FEL: Inga händelser överfördes.`);
+        }   
+    }  
+
+  // POST metoden funkade, men något annat gick fel med överföringen      
   } catch (err) {
       console.error(err);
       alert("FEL: Kunde inte överföra data till Canvas: " + err.message);
   }
+  
 });
 
 
