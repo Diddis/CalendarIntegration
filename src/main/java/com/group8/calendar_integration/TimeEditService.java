@@ -23,16 +23,19 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 
 /**
- * Class for converting TimeEdit URL to .html ending, and
- * deserialize the json data to prep for sending to Canvas.
+ * Class for converting TimeEdit URL to .html ending, fetching JSON and
+ * deserialize the json data for further processing.
+ * 
+ * Returns TimeEdit objects and mapped CalendarEvent objects.
  */
 @Service
 public class TimeEditService {
 
-    /* Fetches the Json data from TimeEdit. Deserialize using POJO.
+    /* Method for fetching the JSON data from TimeEdit. Deserialize using POJO.
      * Returns TimeEditRoot object containing list of TimeEditReservation objects.
      */
-    public static TimeEditRoot fetchCalendar(String url) {
+    public TimeEditRoot fetchCalendar(String url) {
+
         // Validate URL
         URI uri = parseAndValidate(url);
 
@@ -46,32 +49,17 @@ public class TimeEditService {
         // Send HTTP GET request to the url and convert the content into String.
         // (Converting first to String to bypass the fact that the server sends json data 
         // but marks it as text/html, so RestTemplate isn't reading it as json data
-        // so can't automatically turn it into java object - manually doing that with mapper below.
+        // so can't automatically turn it into java object - manually doing that with mapper below.)
         String jsonString;
         try {
             jsonString = restTemplate.getForObject(jsonUri, String.class);
         } catch (RestClientException e) {    // handle errors if failed to fetch data
             throw e;
         }
+
+        // Deserialize JSON string to TimeEditRoot object and return it
+        return deserializeJSON(jsonString);
         
-        // Deserialize JSON string to TimeEditRoot object
-        try {
-            // Create object mapper instance
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());     // to handle Java 8 date/time types
-            
-            // Convert JSON string to object (child objects - TimeEditReservation objects - are 
-            // automatically created when root is called)
-            TimeEditRoot calendar = mapper.readValue(jsonString, TimeEditRoot.class);
-
-            System.out.println("Calendar Object\n" + calendar);    // for testing
-
-            return calendar;
-
-        } catch (IOException e) {
-            throw new TimeEditParseException(
-                "Error while parsing TimeEdit Json data.", e);
-        }
 
     }
 
@@ -82,17 +70,16 @@ public class TimeEditService {
     */
     public List<CalendarEvent> mapToCalendarEvents(List<TimeEditReservation> reservations) {
         
-        List<CalendarEvent> events = new ArrayList<>(); 
-        Set<String> courseCodes = new java.util.HashSet<>();
+        List<CalendarEvent> events = new ArrayList<>();        // list of calendar events
+        Set<String> courseCodes = new java.util.HashSet<>();   // list of course codes found for validating single course
 
         // For each TimeEdit reservation, map to CalendarEvents format
         for (TimeEditReservation r: reservations) {
 
             // Only return events with a course code, so that we don't post generic events (like holidays)
-            //if (r.getColumns().size() < 2) continue;  // safety check to avoid index out of bounds  
             String kurskod = r.getColumns().get(2).trim();
             if (kurskod.isEmpty()) continue;
-            courseCodes.add(kurskod);  // collect course codes for validation
+            courseCodes.add(kurskod);  
 
             LocalDate startDate = LocalDate.parse(r.getStartdate());
             LocalTime startTime = LocalTime.parse(r.getStarttime());
@@ -121,15 +108,16 @@ public class TimeEditService {
         System.out.println("DEBUG: courseCodes = " + courseCodes);   // test
         validateSingleCourse(courseCodes);
 
-        return events;   // return array list of CalendarEvents objects   
+        return events;    
         
     }
 
 
     // --------------- Helper methods below --------------------------
+    // ---------------------------------------------------------------
 
-    /* Helper method for converting HTML URL to JSON URL */
-    private static URI convertHTMLtoJSON(URI timeEditURI) {
+    /* Convert HTML URL to end in .json */
+    private URI convertHTMLtoJSON(URI timeEditURI) {
 
         String jsonPath = timeEditURI.getPath().substring(
             0, timeEditURI.getPath().length() - 5) + ".json";
@@ -137,8 +125,10 @@ public class TimeEditService {
         return timeEditURI.resolve(jsonPath);
     }
 
-    /* Validate the URL, such as if it comes from a different site, is empty, etc. */
-    private static URI parseAndValidate(String url) {
+    /* Validate the URL, such as if it comes from a different site, is empty, etc.
+     * Returns checked URI. 
+    */
+    private URI parseAndValidate(String url) {
         
         if (url == null || url.isEmpty()) {
             throw new IllegalArgumentException("URL kan inte vara tom.");
@@ -164,11 +154,29 @@ public class TimeEditService {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Ogiltig URL: " + e.getMessage());
         }
-            
     }
 
-    /* Helper method for validating that only events
-     * for one course are present in TimeEdit data.
+    /* Deserialize JSON data. 
+     * Returns TimeEditRoot+Reservation object. 
+     */
+    private TimeEditRoot deserializeJSON(String jsonString) {
+        try {
+                // Create object mapper instance
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());     // to handle Java 8 date/time types
+                
+                // Convert JSON string to object (child objects - TimeEditReservation - are 
+                // automatically created when root is called)
+                return mapper.readValue(jsonString, TimeEditRoot.class);
+
+        } catch (IOException e) {
+                throw new TimeEditParseException(
+                    "Error while parsing TimeEdit Json data.", e);
+        }
+    }
+
+
+    /* Validate that only events for one course are present in TimeEdit data.
      */
     private void validateSingleCourse(Set<String> courseCodes) {
         if (courseCodes.size() > 1) {
@@ -177,13 +185,11 @@ public class TimeEditService {
     }
 
     
-    // Error handling
-    public static class TimeEditParseException extends RuntimeException {
+    // Error handling for TimeEdit JSON parsing errors
+    public class TimeEditParseException extends RuntimeException {
         public TimeEditParseException(String message, Throwable cause) {
             super(message, cause);
         }
     }
     
-
-
 }

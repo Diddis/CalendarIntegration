@@ -1,16 +1,15 @@
 package com.group8.calendar_integration;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.group8.calendar_integration.CanvasService.CanvasRequestException;
 import com.group8.calendar_integration.external.CanvasCalendarRequest;
 import com.group8.calendar_integration.external.TimeEditRoot;
 import com.group8.calendar_integration.model.CalendarEvent;
 import com.group8.calendar_integration.model.PostResult;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 /**
- * Controller class.
+ * Controller class for all calendar integration endpoints.
  */
 @RestController
 @RequestMapping("/kalender")       // Http beginning for all endpoints in this controller
@@ -29,7 +28,7 @@ public class CalendarIntegrationController {
     private final CanvasService canvasService;     // canvas service instance
     private final TimeEditService timeEditService; // timeedit service instance 
 
-    // Constructor injection of CanvasService (for Spring to manage dependencies)
+    // Constructor injection of service classes (for Spring to manage dependencies)
     public CalendarIntegrationController(CanvasService canvasService, TimeEditService timeEditService) {
         this.canvasService = canvasService;
         this.timeEditService = timeEditService;
@@ -44,7 +43,7 @@ public class CalendarIntegrationController {
 
         try {
             // Fetch TimeEdit data as POJO
-            TimeEditRoot calendar = TimeEditService.fetchCalendar(url);
+            TimeEditRoot calendar = timeEditService.fetchCalendar(url);
 
             // Map to Canvas events
             List<CalendarEvent> calendarEvents = timeEditService.mapToCalendarEvents(calendar.getReservations());
@@ -70,16 +69,12 @@ public class CalendarIntegrationController {
      */
     @PostMapping("/postToCanvas")    // Http endpoint for second button
     public ResponseEntity<PostResult> postToCanvas(@RequestBody List<CalendarEvent> events, 
-        @RequestParam String idInputCode) {  
-
-        // Hardcoded context code for testing
-        //String contextCode = "user_45559" / "user_168008";   
+        @RequestParam String contextCode) {    
 
         System.out.println("Printing mapped events:");   // testing
         System.out.println(events);                        // testing
 
         try {
-            String contextCode = idInputCode;
             List<CanvasCalendarRequest> canvasRequests = canvasService.mapToCanvasCalendar(events, contextCode);
             
             PostResult postResult = canvasService.RESTPostCanvasEvents(canvasRequests);
@@ -87,7 +82,8 @@ public class CalendarIntegrationController {
             // Return Status 200 
             return ResponseEntity.ok(postResult); 
 
-        // Catch network or other 500 unexpected runtime errors
+        // Catch server or other 500 unexpected runtime errors
+        // (total unexpected errors from CanvasService, not per-event)
         } catch (RuntimeException e) {
             
             // Log the error message to the server console for debugging
@@ -96,10 +92,7 @@ public class CalendarIntegrationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new PostResult(0, events.size(), events.stream().map(
                     ev -> ev.getActivity()).collect(Collectors.toList())));
-            
-            // Returnera Status 400 (Bad Request) med felmeddelandet till webbläsaren
-            //return ResponseEntity.badRequest().body(
-                //"Kunde inte överföra till Canvas: Kontrollera att ID (" + idInputCode + ") är korrekt.");
+
         }
 
     }

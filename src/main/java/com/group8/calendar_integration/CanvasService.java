@@ -19,11 +19,7 @@ import org.springframework.http.HttpHeaders;
  * Class for mapping TimeEdit calendar data to Canvas json format, 
  * and POST REST service method to Canvas.
  * 
- * Using this tutorial for json-pojo conversion:
- * https://www.digitalocean.com/community/tutorials/jackson-json-java-parser-api-example-tutorial
- * https://blogs.oracle.com/javamagazine/java-json-serialization-jackson/ 
- * 
- * mapping  timeedit data to canvas data:
+ * Mapping  timeedit data to canvas data:
  * 
  *  timeedit                          canvas                        notes
  *  --------------------------------------------------------------------------
@@ -58,9 +54,8 @@ public class CanvasService {
     }
 
 
-    /* Method for mapping nested CalendarEvent objects to CanvasCalendarRequest objects for 
-     * POSTING to Canvas API.
-     * 
+    /* Method for mapping nested CalendarEvent objects to CanvasCalendarRequest objects 
+     * needed for POSTING to Canvas API.
      * Returns list of CanvasCalendarRequest objects
     */
     public List<CanvasCalendarRequest> mapToCanvasCalendar(List<CalendarEvent> events, 
@@ -97,9 +92,6 @@ public class CanvasService {
             String comment = "";
             if (e.getComments() != null && !e.getComments().isBlank()) {
                 comment = e.getComments();
-                // AI-tips: Om du vill att kommentaren ska synas i Canvas-beskrivningen:
-                //if (description.length() > 0) description.append("<br>");   // kommenterade bort så att den inte syns på två ställen i canvas kalendern
-                //description.append("Kommentar: ").append(comment);
             }
             
             CanvasCalendarRequest request = new CanvasCalendarRequest(
@@ -123,7 +115,8 @@ public class CanvasService {
      * The URL structure is based on Canvas API documentation at https://canvas.instructure.com/doc/api/calendar_events.html#method.calendar_events.create
      * Loop through reservations and post each reservation/event using REST
      * 
-     * Returns PostResult object with number of successful and failed posts, along with list of failed posts if any
+     * Returns PostResult object with number of successful and failed posts, 
+     * along with list of failed posts, if any.
      */
 
     public PostResult RESTPostCanvasEvents(List<CanvasCalendarRequest> canvasEvents) {
@@ -173,5 +166,6 @@ public class CanvasService {
             failedEvents);
 
     } // end method
+
 
 }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * Class for top-level TimeEdit JSON fields.
  * Root object for TimeEdit data.
- * Immutable to avoid editing calendar data during transfer.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)   // ignore info field we do not need
 public class TimeEditRoot {
