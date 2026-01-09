@@ -1,5 +1,4 @@
 package com.group8.calendar_integration;
-import com.group8.calendar_integration.CanvasService.CanvasRequestException;
 import com.group8.calendar_integration.external.CanvasCalendarRequest;
 import com.group8.calendar_integration.external.TimeEditRoot;
 import com.group8.calendar_integration.model.CalendarEvent;
@@ -69,12 +68,13 @@ public class CalendarIntegrationController {
      */
     @PostMapping("/postToCanvas")    // Http endpoint for second button
     public ResponseEntity<PostResult> postToCanvas(@RequestBody List<CalendarEvent> events, 
-        @RequestParam String contextCode) {    
+        @RequestParam String idInputCode) {    
 
         System.out.println("Printing mapped events:");   // testing
         System.out.println(events);                        // testing
 
         try {
+            String contextCode = idInputCode;
             List<CanvasCalendarRequest> canvasRequests = canvasService.mapToCanvasCalendar(events, contextCode);
             
             PostResult postResult = canvasService.RESTPostCanvasEvents(canvasRequests);
