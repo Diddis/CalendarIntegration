@@ -101,10 +101,11 @@ button1.addEventListener("click", async () => {
 // Event listener for the button
 button2.addEventListener("click", async () => {      
   const currentId = idInput.value.trim();  // Hämta det aktuella värdet vid knapptryckning ("Överför kalender")
-  if (!currentId) {
-      alert("Fyll i ett ID i fältet för att kunna överföra händelser.");
+  
+  if (events.length === 0) {
+      alert("FEL: Du måste hämta kalenderdata innan du kan överföra händelser.");
       return;
-  }
+  }  
 
   // Create new filtered list and include only marked events
   const eventsToTransfer = events.filter(e => e.marked === true);  
@@ -118,7 +119,12 @@ button2.addEventListener("click", async () => {
       alert("FEL: Antalet markerade händelser motsvarar inte antalet som ska överföras. Överföringen avbruten.");
       return;
   }
-  
+
+  if (!currentId) {
+      alert("Fyll i ett ID i fältet för att kunna överföra händelser.");
+      return;
+  }
+
   try {
       console.log("Överför events till Canvas. Antal: ", eventsToTransfer.length);
       const canvasData = JSON.stringify(eventsToTransfer);
