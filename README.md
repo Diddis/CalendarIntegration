@@ -6,9 +6,9 @@ A Service-Oriented Architecture (SOA) proof-of-concept designed to automate the 
 
 ## Purpose
 
-A major challenge facing higher education is the growing burden of administrative tasks. While vital for course organization, these demands heavily consume the time instructors should spend on core teaching. 
+A major challenge facing higher education is the growing burden of administrative tasks. While vital for course organization, these demands heavily consume the time instructors could spend on core teaching. 
 
-A particularly time-consuming and error-prone bottleneck is the **manual transfer of finalized schedule data from the scheduling system (TimeEdit) to the online course platform (Canvas)**. Because these systems lack native integration, course coordinators must manually re-enter scheduled events, leading to redundant work and the risk of displaying inconsistent information to students.
+A particularly time-consuming and error-prone bottleneck is the manual transfer of finalized schedule data from the scheduling system (TimeEdit) to the online course platform (Canvas). Because these systems lack native integration, course coordinators must manually re-enter scheduled events, leading to redundant work and the risk of displaying inconsistent information to students.
 
 ### The Solution
 This project applies **Enterprise Architecture (EA)** principles to analyze the existing scheduling process, identify key shortcomings, and develop an automated system integration. Using a **Service-Oriented Architecture (SOA)** approach, we developed a proof-of-concept prototype that securely retrieves schedule information from the TimeEdit API and registers it directly into the Canvas calendar via its open API. 
